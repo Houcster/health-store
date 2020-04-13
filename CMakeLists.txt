@@ -52,12 +52,14 @@ list(APPEND GAME_SOURCE
      Classes/MainMenuScene.cpp
      Classes/GamingScene.cpp
      Classes/MyBodyParser.cpp
+     Classes/Items.cpp
      )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
      Classes/MainMenuScene.h
      Classes/GamingScene.h
      Classes/MyBodyParser.h
+     Classes/Items.h
      )
 
 if(ANDROID)

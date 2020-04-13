@@ -94,6 +94,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     register_all_packages();
 
+    // загрузка Sprite Sheet
+    auto spritecache = SpriteFrameCache::getInstance();
+    spritecache->addSpriteFramesWithFile("hs_spritesheet.plist");
+
     // create a scene. it's an autorelease object
     auto MainMenuScene = MainMenuScene::createScene();
     // run
