@@ -29,17 +29,17 @@ Item* Item::createItem(Layer* layer, Size* itemPos)
     if (item && item->init()) {
         item->autorelease();
         item->sprite = Sprite::createWithSpriteFrameName(name);
-        item->sprite->setContentSize(Size(100.0f, 100.0f));
-        item->sprite->setPosition(itemPos->width * 0.5, itemPos->height * 0.4);
+        item->sprite->setContentSize(Size(itemPos->width * 0.085f, itemPos->height * 0.15f));
+        item->sprite->setPosition(itemPos->width, itemPos->height * 0.8);
+        item->sprite->setGlobalZOrder(3);
 
         if (MyBodyParser::getInstance()->parseJsonFile("PhysicsBodies.json"))
         {
-
-
             item->body = MyBodyParser::getInstance()->bodyFromJson(item->sprite, name, PHYSICSBODY_MATERIAL_DEFAULT);
             item->body->setTag(DRAG_BODYS_TAG);
             item->body->setCollisionBitmask(collisionBitmask);
             item->body->setContactTestBitmask(true);
+            item->body->setDynamic(false);
 
             if (item->body != nullptr)
             {
@@ -55,6 +55,9 @@ Item* Item::createItem(Layer* layer, Size* itemPos)
         {
             CCLOG("JSON file not found");
         }
+
+        item->body->setVelocity(Vec2(-220, 0));
+
         item->addChild(item->sprite);
         layer->addChild(item);
         return item;

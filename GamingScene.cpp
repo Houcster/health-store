@@ -1,5 +1,7 @@
 #include "GamingScene.h"
 #include "Items.h"
+#include "Baskets.h"
+#include "GameOverScene.h"
 #include "MainMenuScene.h"
 #include "SimpleAudioEngine.h"
 
@@ -15,7 +17,7 @@ static PhysicsBody* tomat_physicsBody;
 static Sprite* sprite_vegTomat;
 static Label* label;
 static PhysicsJointPin* joint;
-static int score = 0;
+static int score;
 
 
 Scene* GamingScene::createScene()
@@ -27,7 +29,7 @@ Scene* GamingScene::createScene()
     scene->getPhysicsWorld()->setGravity(Vec2(0, -900));
 
     // optional: set debug draw
-    scene->getPhysicsWorld()->setDebugDrawMask(0xffff);
+    //scene->getPhysicsWorld()->setDebugDrawMask(0xffff);
 
     auto layer = GamingScene::create();
     scene->addChild(layer);
@@ -52,6 +54,10 @@ bool GamingScene::init()
         return false;
     }
 
+    LayerColor* _bgColor = LayerColor::create(Color4B(124, 130, 130, 255));
+    this->addChild(_bgColor, -10);
+
+    score = 0;
     visibleSize = Director::getInstance()->getVisibleSize();
     itemsPos = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -79,76 +85,43 @@ bool GamingScene::init()
 
     auto menu_item_1 = MenuItemFont::create("Back", CC_CALLBACK_1(GamingScene::goBack, this));
 
-    menu_item_1->setPosition(visibleSize.width * 0.95, visibleSize.height * 0.05);
+    menu_item_1->setPosition(visibleSize.width * 0.935f, visibleSize.height * 0.964f);
 
     auto* menu = Menu::create(menu_item_1, NULL);
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
 
-    
+    auto borderBody = PhysicsBody::createEdgeBox(visibleSize, PHYSICSBODY_MATERIAL_DEFAULT, 3);
 
-    auto groundBody = PhysicsBody::createEdgeBox(visibleSize, PHYSICSBODY_MATERIAL_DEFAULT, 3);
+    auto borderNode = Node::create();
+    borderNode->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+    borderNode->setPhysicsBody(borderBody);
+    addChild(borderNode);
+
+    auto groundBody = PhysicsBody::createBox(Size(visibleSize.width, visibleSize.height * 0.03f), PHYSICSBODY_MATERIAL_DEFAULT);
+    groundBody->setCollisionBitmask(5);
+    groundBody->setContactTestBitmask(true);
+    groundBody->setDynamic(false);
 
     auto groundNode = Node::create();
-    groundNode->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+    groundNode->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.02f);
     groundNode->setPhysicsBody(groundBody);
     addChild(groundNode);
 
-    auto fruitBasketBody = PhysicsBody::createBox(Size(100.0f, 20.0f), PHYSICSBODY_MATERIAL_DEFAULT);
-    fruitBasketBody->setCollisionBitmask(1);
-    fruitBasketBody->setContactTestBitmask(true);
-    fruitBasketBody->setDynamic(false);
 
-    auto fruitBasketNode = Node::create();
-    fruitBasketNode->setPosition(visibleSize.width * 0.2, visibleSize.height * 0.1);
-    fruitBasketNode->setPhysicsBody(fruitBasketBody);
-    addChild(fruitBasketNode);
+    auto barrierBody = PhysicsBody::createBox(Size(visibleSize.width * 0.015f, visibleSize.height * 0.52f), PHYSICSBODY_MATERIAL_DEFAULT);
+    barrierBody->setCollisionBitmask(5);
+    barrierBody->setContactTestBitmask(true);
+    barrierBody->setDynamic(false);
 
-    auto vegBasketBody = PhysicsBody::createBox(Size(100.0f, 20.0f), PHYSICSBODY_MATERIAL_DEFAULT);
-    vegBasketBody->setCollisionBitmask(2);
-    vegBasketBody->setContactTestBitmask(true);
-    vegBasketBody->setDynamic(false);
+    auto barrierSprite = Sprite::create("barrier.png");
+    barrierSprite->setContentSize(Size(15.0f, 280.0f));
+    barrierSprite->setPosition(visibleSize.width * 0.0075f, visibleSize.height * 0.925f);
+    barrierSprite->addComponent(barrierBody);
+    addChild(barrierSprite);
 
-    auto vegBasketNode = Node::create();
-    vegBasketNode->setPosition(visibleSize.width * 0.8, visibleSize.height * 0.1);
-    vegBasketNode->setPhysicsBody(vegBasketBody);
-    addChild(vegBasketNode);
-    
-    
-    //auto orange_physicsBody = PhysicsBody::createBox(Size(100.0f, 100.0f), PhysicsMaterial(0.1f, 1.0f, 0.0f));
-    //orange_physicsBody->setTag(DRAG_BODYS_TAG);
-
-    //auto tomat_physicsBody = PhysicsBody::createBox(Size(100.0f, 100.0f), PhysicsMaterial(0.1f, 1.0f, 0.0f));
-    //tomat_physicsBody->setTag(DRAG_BODYS_TAG);
-
-    sprite_fruitOrange = Sprite::createWithSpriteFrameName("orange");
-    sprite_fruitOrange->setContentSize(Size(100.0f, 100.0f));
-    sprite_fruitOrange->setPosition(visibleSize.width * 0.5, visibleSize.height * 0.4);
-    addChild(sprite_fruitOrange);
-
-    if (MyBodyParser::getInstance()->parseJsonFile("PhysicsBodies.json"))
-    {
-        //PhysicsMaterial(0.1f, 1.0f, 0.0f)
-        orange_physicsBody = MyBodyParser::getInstance()->bodyFromJson(sprite_fruitOrange, "orange", PHYSICSBODY_MATERIAL_DEFAULT);
-        orange_physicsBody->setTag(DRAG_BODYS_TAG);
-        orange_physicsBody->setName("orangeBody");
-        orange_physicsBody->setCollisionBitmask(3);
-        orange_physicsBody->setContactTestBitmask(true);
-
-        if (orange_physicsBody != nullptr)
-        {
-            // Устанавливаем тело для спрайта
-            sprite_fruitOrange->addComponent(orange_physicsBody);
-        }
-        else
-        {
-            CCLOG("Object.cpp spriteBody is nullptr");
-        }
-    }
-    else
-    {
-        CCLOG("JSON file not found");
-    }
+    auto fruitbasket = Basket::createBasket(this, &itemsPos, 1);
+    auto veggiesbasket = Basket::createBasket(this, &itemsPos, 2);
 
     auto bodiesContactListener = EventListenerPhysicsContact::create();
     bodiesContactListener->onContactBegin = CC_CALLBACK_1(GamingScene::onContactBegin, this);
@@ -161,7 +134,7 @@ bool GamingScene::init()
     touchListener->onTouchCancelled = CC_CALLBACK_2(GamingScene::onTouchEnded, this);
     this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(touchListener, this);
 
-    schedule(CC_SCHEDULE_SELECTOR(GamingScene::update), 2.0f);
+    schedule(CC_SCHEDULE_SELECTOR(GamingScene::update), 1.2f);
   
     return true;
 }
@@ -172,7 +145,7 @@ bool GamingScene::init()
 
 void GamingScene::update(float dt)
 {
-    auto player = Item::createItem(this, &itemsPos);
+    auto item = Item::createItem(this, &itemsPos);
     //CCLOG("got");
 }
 
@@ -213,6 +186,41 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             score++;
             label->setString(std::to_string(score));
         }
+
+        //Условие, при котором игра заканчивается, если фрукт попал в корзину для овощей
+        if (a->getCollisionBitmask() == 4 && b->getCollisionBitmask() == 1)
+        {
+            auto GameOverScene = GameOverScene::createScene(score);
+            Director::getInstance()->replaceScene(GameOverScene);
+        }
+        else if (a->getCollisionBitmask() == 1 && b->getCollisionBitmask() == 4)
+        {
+            auto GameOverScene = GameOverScene::createScene(score);
+            Director::getInstance()->replaceScene(GameOverScene);
+        }
+
+        //Условие, при котором игра заканчивается, если овощь попал в корзину для фруктов
+        if (a->getCollisionBitmask() == 3 && b->getCollisionBitmask() == 2)
+        {
+            auto GameOverScene = GameOverScene::createScene(score);
+            Director::getInstance()->replaceScene(GameOverScene);
+        }
+        else if (a->getCollisionBitmask() == 2 && b->getCollisionBitmask() == 3)
+        {
+            auto GameOverScene = GameOverScene::createScene(score);
+            Director::getInstance()->replaceScene(GameOverScene);
+        }
+
+        if (a->getCollisionBitmask() == 5)
+        {
+            auto GameOverScene = GameOverScene::createScene(score);
+            Director::getInstance()->replaceScene(GameOverScene);
+        }
+        else if (b->getCollisionBitmask() == 5)
+        {
+            auto GameOverScene = GameOverScene::createScene(score);
+            Director::getInstance()->replaceScene(GameOverScene);
+        }
     }
     //CCLOG("1");
     //CCLOG("2");
@@ -224,16 +232,15 @@ bool GamingScene::onTouchBegan(Touch* touch, Event* event)
     auto location = touch->getLocation();
     auto arr = scene->getPhysicsWorld()->getShapes(location);
 
-
     PhysicsBody* body = nullptr;
     for (auto& obj : arr)
     {
         if ((obj->getBody()->getTag() & DRAG_BODYS_TAG) != 0)
         {
             body = obj->getBody();
-            if (!body->isGravityEnabled())
+            if (!body->isDynamic())
             {
-            body->setGravityEnable(true);
+                body->setDynamic(true);
             }
             break;
         }

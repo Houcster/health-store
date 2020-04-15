@@ -53,6 +53,8 @@ list(APPEND GAME_SOURCE
      Classes/GamingScene.cpp
      Classes/MyBodyParser.cpp
      Classes/Items.cpp
+     Classes/Baskets.cpp
+     Classes/GameOverScene.cpp
      )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
@@ -60,6 +62,8 @@ list(APPEND GAME_HEADER
      Classes/GamingScene.h
      Classes/MyBodyParser.h
      Classes/Items.h
+     Classes/Baskets.h
+     Classes/GameOverScene.h
      )
 
 if(ANDROID)
