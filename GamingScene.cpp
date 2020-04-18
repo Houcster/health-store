@@ -7,17 +7,12 @@
 
 USING_NS_CC;
 
-static Scene* scene;
+Scene* scene;
 static const int DRAG_BODYS_TAG = 0x80;
-static Size visibleSize;
-static Size itemsPos;
-static PhysicsBody* orange_physicsBody;
-static Sprite* sprite_fruitOrange;
-static PhysicsBody* tomat_physicsBody;
-static Sprite* sprite_vegTomat;
-static Label* label;
-static PhysicsJointPin* joint;
-static int score;
+Size visibleSize;
+Size itemsPos;
+Label* label;
+int score;
 
 
 Scene* GamingScene::createScene()
@@ -134,7 +129,7 @@ bool GamingScene::init()
     touchListener->onTouchCancelled = CC_CALLBACK_2(GamingScene::onTouchEnded, this);
     this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(touchListener, this);
 
-    schedule(CC_SCHEDULE_SELECTOR(GamingScene::update), 1.2f);
+    schedule(CC_SCHEDULE_SELECTOR(GamingScene::update), 1.8f);
   
     return true;
 }
@@ -160,6 +155,12 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
     if (nodeA && nodeB)
     {
         //”словие, при котором удал€ютс€ фрукты, если попали в корзину дл€ фруктов
+        //CollisionBitMask:
+        //1 - корзина дл€ фруктов
+        //2 - корзина дл€ овощей
+        //3 - фрукты
+        //4 - овощи
+        //5 - барьер и земл€
         if (a->getCollisionBitmask() == 3 && b->getCollisionBitmask() == 1)
         {
             nodeA->removeFromParentAndCleanup(true);
@@ -253,7 +254,7 @@ bool GamingScene::onTouchBegan(Touch* touch, Event* event)
         mouse->getPhysicsBody()->setDynamic(false);
         mouse->setPosition(location);
         this->addChild(mouse);
-        joint = PhysicsJointPin::construct(mouse->getPhysicsBody(), body, location);
+        auto joint = PhysicsJointPin::construct(mouse->getPhysicsBody(), body, location);
         joint->setMaxForce(5000.0f * body->getMass());
         scene->getPhysicsWorld()->addJoint(joint);
         _mouses.insert(std::make_pair(touch->getID(), mouse));

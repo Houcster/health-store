@@ -5,21 +5,21 @@ USING_NS_CC;
 
 Basket* Basket::createBasket(Layer* layer, Size* itemPos, int category)
 {
-    Size size;
+    Size position;
     std::string nameBack;
     std::string nameForward;
     int collisionBitmask;
 
     if (category == 1)
     {
-        size = Size(itemPos->width * 0.2f, itemPos->height * 0.25f);
+        position = Size(itemPos->width * 0.2f, itemPos->height * 0.265f);
         nameBack = "fruitsBasketBack";
         nameForward = "fruitsBasketForward";
         collisionBitmask = 1;
     }
     else if (category == 2)
     {
-        size = Size(itemPos->width * 0.8f, itemPos->height * 0.25f);
+        position = Size(itemPos->width * 0.8f, itemPos->height * 0.265f);
         nameBack = "veggiesBasketBack";
         nameForward = "veggiesBasketForward";
         collisionBitmask = 2;
@@ -31,15 +31,15 @@ Basket* Basket::createBasket(Layer* layer, Size* itemPos, int category)
         basket->autorelease();
 
         basket->spriteBack = Sprite::createWithSpriteFrameName(nameBack);
-        basket->spriteBack->setContentSize(Size(itemPos->width * 0.23f, itemPos->height * 0.408f));
-        basket->spriteBack->setPosition(size);
+        basket->spriteBack->setContentSize(Size(itemPos->width * 0.25f, itemPos->height * 0.445f));
+        basket->spriteBack->setPosition(position);
         basket->spriteBack->setGlobalZOrder(2);
         //basket->spriteBack->setOpacity(20);
         basket->addChild(basket->spriteBack);
 
         basket->spriteForward = Sprite::createWithSpriteFrameName(nameForward);
-        basket->spriteForward->setContentSize(Size(itemPos->width * 0.23f, itemPos->height * 0.408f));
-        basket->spriteForward->setPosition(size);
+        basket->spriteForward->setContentSize(Size(itemPos->width * 0.25f, itemPos->height * 0.445f));
+        basket->spriteForward->setPosition(position);
         basket->spriteForward->setGlobalZOrder(4);
         //basket->spriteForward->setOpacity(20);
         basket->addChild(basket->spriteForward);

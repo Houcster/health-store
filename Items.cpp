@@ -56,7 +56,7 @@ Item* Item::createItem(Layer* layer, Size* itemPos)
             CCLOG("JSON file not found");
         }
 
-        item->body->setVelocity(Vec2(-220, 0));
+        item->body->setVelocity(Vec2(itemPos->width * -0.15f, 0));
 
         item->addChild(item->sprite);
         layer->addChild(item);
