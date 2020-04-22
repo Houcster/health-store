@@ -23,6 +23,12 @@ static cocos2d::Size designResolutionSize = cocos2d::Size(960, 540);
 static cocos2d::Size smallResolutionSize = cocos2d::Size(960, 540);
 static cocos2d::Size mediumResolutionSize = cocos2d::Size(1920, 1080);
 static cocos2d::Size largeResolutionSize = cocos2d::Size(2560, 1440);
+Size visibleSize;
+int currentLevel = 0;
+int score = 0;
+int levelDoneCount = 0;
+int itemCounter = 0;
+float itemSpeed = 0;
 
 AppDelegate::AppDelegate()
 {
@@ -100,6 +106,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto spritecache = SpriteFrameCache::getInstance();
     spritecache->addSpriteFramesWithFile("hs_spritesheet.plist");
 
+    visibleSize = Director::getInstance()->getVisibleSize();
     // create a scene. it's an autorelease object
     auto MainMenuScene = MainMenuScene::createScene();
     // run

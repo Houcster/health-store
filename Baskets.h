@@ -6,7 +6,7 @@
 class Basket : public cocos2d::Node
 {
 public:
-    static Basket* createBasket(cocos2d::Layer* layer, cocos2d::Size* itemPos, int category);
+    static Basket* createBasket(cocos2d::Layer* layer, int category);
 
     cocos2d::Sprite* spriteBack;
     cocos2d::Sprite* spriteForward;

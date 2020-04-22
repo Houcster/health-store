@@ -1,9 +1,11 @@
-#include "MainMenuScene.h"
-#include "GamingScene.h"
 #include "AppDelegate.h"
 #include "SimpleAudioEngine.h"
+#include "MainMenuScene.h"
+#include "GamingScene.h"
+#include "LevelCompleteScene.h"
 
 USING_NS_CC;
+extern Size visibleSize;
 
 Scene* MainMenuScene::createScene()
 {
@@ -30,7 +32,7 @@ bool MainMenuScene::init()
     LayerColor* _bgColor = LayerColor::create(Color4B(124, 130, 130, 255));
     this->addChild(_bgColor, -10);
 
-    auto visibleSize = Director::getInstance()->getVisibleSize();
+    visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
     auto label = Label::createWithTTF("Oh hi Mark", "fonts/Marker Felt.ttf", 24);
@@ -70,8 +72,10 @@ bool MainMenuScene::init()
 void MainMenuScene::createGamingScene(Ref* pSender)
 {
     //Метод создаёт игровую сцену(Gaming Scene), при этом текущая сцена(MainMenuScene) удаляется
-    auto GamingScene = GamingScene::createScene();
-    Director::getInstance()->pushScene(GamingScene);    
+    auto GamingScene = GamingScene::createScene();  
+    Director::getInstance()->pushScene(GamingScene);  
+    //auto SubLevelScene = LevelCompleteScene::createScene();
+    //Director::getInstance()->pushScene(SubLevelScene);
 }
 
 void MainMenuScene::menuCloseCallback(Ref* pSender)

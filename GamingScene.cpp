@@ -4,32 +4,34 @@
 #include "GameOverScene.h"
 #include "MainMenuScene.h"
 #include "SimpleAudioEngine.h"
+#include "LevelCompleteScene.h"
 
 USING_NS_CC;
 
-Scene* scene;
 static const int DRAG_BODYS_TAG = 0x80;
-Size visibleSize;
-Size itemsPos;
-Label* label;
-int score;
-
+extern int score;
+extern Size visibleSize;
+extern int currentLevel;
+extern int levelDoneCount;
+extern int itemCounter;
+extern float itemSpeed;
 
 Scene* GamingScene::createScene()
 {
     // create the scene with physics enabled
-    scene = Scene::createWithPhysics();
+    auto gamingScene = Scene::createWithPhysics();
 
     // set gravity
-    scene->getPhysicsWorld()->setGravity(Vec2(0, -900));
+    gamingScene->getPhysicsWorld()->setGravity(Vec2(0, -900));
 
     // optional: set debug draw
-    //scene->getPhysicsWorld()->setDebugDrawMask(0xffff);
+    gamingScene->getPhysicsWorld()->setDebugDrawMask(0xffff);
 
     auto layer = GamingScene::create();
-    scene->addChild(layer);
+    gamingScene->addChild(layer);
+    gamingScene->getPhysicsWorld()->setSubsteps(10);
 
-    return scene;
+    return gamingScene;
 }
 
 // Print useful error message instead of segfaulting when files are not there.
@@ -49,12 +51,12 @@ bool GamingScene::init()
         return false;
     }
 
+    setRules();
+
     LayerColor* _bgColor = LayerColor::create(Color4B(124, 130, 130, 255));
     this->addChild(_bgColor, -10);
 
-    score = 0;
     visibleSize = Director::getInstance()->getVisibleSize();
-    itemsPos = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
     /////////////////////////////
@@ -63,26 +65,35 @@ bool GamingScene::init()
     // add a label shows "Hello World"
     // create and initialize a label
 
-    label = Label::createWithTTF("Its Gaming Scene", "fonts/Marker Felt.ttf", 24);
-    if (label == nullptr)
+    gs_levelLabel = Label::createWithTTF("Level: " + std::to_string(currentLevel), "fonts/Marker Felt.ttf", 24);
+    if (gs_levelLabel == nullptr)
     {
         problemLoading("'fonts/Marker Felt.ttf'");
     }
     else
     {
         // position the label on the center of the screen
-        label->setPosition(Vec2(origin.x + visibleSize.width / 2,
-            origin.y + visibleSize.height - label->getContentSize().height));
+        gs_levelLabel->setPosition(Vec2(visibleSize.width * 0.1f, visibleSize.height * 0.964f));
 
         // add the label as a child to this layer
-        this->addChild(label, 1);
+        this->addChild(gs_levelLabel, 1);
     }
 
-    auto menu_item_1 = MenuItemFont::create("Back", CC_CALLBACK_1(GamingScene::goBack, this));
+    gs_scoreLabel = Label::createWithTTF(std::to_string(score), "fonts/Marker Felt.ttf", 24);
+    if (gs_scoreLabel == nullptr)
+    {
+        problemLoading("'fonts/Marker Felt.ttf'");
+    }
+    else
+    {
+        // position the label on the center of the screen
+        gs_scoreLabel->setPosition(Vec2(visibleSize.width * 0.5f, visibleSize.height * 0.964f));
 
-    menu_item_1->setPosition(visibleSize.width * 0.935f, visibleSize.height * 0.964f);
+        // add the label as a child to this layer
+        this->addChild(gs_scoreLabel, 1);
+    }
 
-    auto* menu = Menu::create(menu_item_1, NULL);
+    auto* menu = Menu::create(NULL);
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
 
@@ -110,13 +121,13 @@ bool GamingScene::init()
     barrierBody->setDynamic(false);
 
     auto barrierSprite = Sprite::create("barrier.png");
-    barrierSprite->setContentSize(Size(15.0f, 280.0f));
+    barrierSprite->setContentSize(Size(visibleSize.width * 0.015f, visibleSize.height * 0.52f));
     barrierSprite->setPosition(visibleSize.width * 0.0075f, visibleSize.height * 0.925f);
     barrierSprite->addComponent(barrierBody);
     addChild(barrierSprite);
 
-    auto fruitbasket = Basket::createBasket(this, &itemsPos, 1);
-    auto veggiesbasket = Basket::createBasket(this, &itemsPos, 2);
+    auto fruitbasket = Basket::createBasket(this, 1);
+    auto veggiesbasket = Basket::createBasket(this, 2);
 
     auto bodiesContactListener = EventListenerPhysicsContact::create();
     bodiesContactListener->onContactBegin = CC_CALLBACK_1(GamingScene::onContactBegin, this);
@@ -140,7 +151,7 @@ bool GamingScene::init()
 
 void GamingScene::update(float dt)
 {
-    auto item = Item::createItem(this, &itemsPos);
+    auto item = Item::createItem(this);
     //CCLOG("got");
 }
 
@@ -163,65 +174,83 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
         //5 - барьер и земл€
         if (a->getCollisionBitmask() == 3 && b->getCollisionBitmask() == 1)
         {
-            nodeA->removeFromParentAndCleanup(true);
+            //nodeA->removeAllComponents();
+            //a->removeFromWorld();
+            //nodeA->removeFromParentAndCleanup(true);
+            nodeA->removeFromParent();
             score++;
-            label->setString(std::to_string(score));
+            gs_scoreLabel->setString(std::to_string(score));
         }
         else if (a->getCollisionBitmask() == 1 && b->getCollisionBitmask() == 3)
         {
-            nodeB->removeFromParentAndCleanup(true);
+            //nodeB->removeAllComponents();
+            //b->removeFromWorld();
+            //nodeB->removeFromParentAndCleanup(true);
+            nodeB->removeFromParent();
             score++;
-            label->setString(std::to_string(score));
+            gs_scoreLabel->setString(std::to_string(score));
         }
 
         //”словие, при котором удал€ютс€ овощи, если попали в корзину дл€ овощей
         if (a->getCollisionBitmask() == 4 && b->getCollisionBitmask() == 2)
         {
-            nodeA->removeFromParentAndCleanup(true);
+            //nodeA->removeAllComponents();
+            //a->removeFromWorld();
+            //nodeA->removeFromParentAndCleanup(true);
+            nodeA->removeFromParent();
             score++;
-            label->setString(std::to_string(score));
+            gs_scoreLabel->setString(std::to_string(score));
         }
         else if (a->getCollisionBitmask() == 2 && b->getCollisionBitmask() == 4)
         {
-            nodeB->removeFromParentAndCleanup(true);
+            //nodeB->removeAllComponents();
+            //b->removeFromWorld();
+            //nodeB->removeFromParentAndCleanup(true);
+            nodeB->removeFromParent();
             score++;
-            label->setString(std::to_string(score));
+            gs_scoreLabel->setString(std::to_string(score));
         }
 
         //”словие, при котором игра заканчиваетс€, если фрукт попал в корзину дл€ овощей
         if (a->getCollisionBitmask() == 4 && b->getCollisionBitmask() == 1)
         {
-            auto GameOverScene = GameOverScene::createScene(score);
+            auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(GameOverScene);
         }
         else if (a->getCollisionBitmask() == 1 && b->getCollisionBitmask() == 4)
         {
-            auto GameOverScene = GameOverScene::createScene(score);
-            Director::getInstance()->replaceScene(GameOverScene);
+            auto GameOverScene = GameOverScene::createScene();
+            Director::getInstance()->replaceScene(GameOverScene);           
         }
 
         //”словие, при котором игра заканчиваетс€, если овощь попал в корзину дл€ фруктов
         if (a->getCollisionBitmask() == 3 && b->getCollisionBitmask() == 2)
         {
-            auto GameOverScene = GameOverScene::createScene(score);
+            auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(GameOverScene);
         }
         else if (a->getCollisionBitmask() == 2 && b->getCollisionBitmask() == 3)
         {
-            auto GameOverScene = GameOverScene::createScene(score);
+            auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(GameOverScene);
         }
 
         if (a->getCollisionBitmask() == 5)
         {
-            auto GameOverScene = GameOverScene::createScene(score);
+            auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(GameOverScene);
         }
         else if (b->getCollisionBitmask() == 5)
         {
-            auto GameOverScene = GameOverScene::createScene(score);
+            auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(GameOverScene);
         }
+    }
+
+    if (score == levelDoneCount)
+    {
+        auto LevelCompleteScene = LevelCompleteScene::createScene();
+        Director::getInstance()->replaceScene(TransitionProgressHorizontal::create(10, LevelCompleteScene));
     }
     //CCLOG("1");
     //CCLOG("2");
@@ -231,7 +260,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
 bool GamingScene::onTouchBegan(Touch* touch, Event* event)
 {
     auto location = touch->getLocation();
-    auto arr = scene->getPhysicsWorld()->getShapes(location);
+    auto arr = this->getScene()->getPhysicsWorld()->getShapes(location);
 
     PhysicsBody* body = nullptr;
     for (auto& obj : arr)
@@ -255,8 +284,8 @@ bool GamingScene::onTouchBegan(Touch* touch, Event* event)
         mouse->setPosition(location);
         this->addChild(mouse);
         auto joint = PhysicsJointPin::construct(mouse->getPhysicsBody(), body, location);
-        joint->setMaxForce(5000.0f * body->getMass());
-        scene->getPhysicsWorld()->addJoint(joint);
+        joint->setMaxForce(4000.0f * body->getMass());
+        this->getScene()->getPhysicsWorld()->addJoint(joint);
         _mouses.insert(std::make_pair(touch->getID(), mouse));
 
         return true;
@@ -284,16 +313,7 @@ void GamingScene::onTouchEnded(Touch* touch, Event* event)
         this->removeChild(it->second);
         _mouses.erase(it);
     }
-}
-
-void GamingScene::createItem()
-{
-    auto player = Item::createItem(this, &itemsPos);
-}
-
-void GamingScene::goBack(Ref* psender) 
-{
-    Director::getInstance()->popScene();
+    
 }
 
 void GamingScene::changeLabelColor(Ref* pSender, Label* label)
@@ -310,4 +330,33 @@ void GamingScene::menuCloseCallback(Ref* pSender)
 
     //EventCustom customEndEvent("game_scene_close_event");
     //_eventDispatcher->dispatchEvent(&customEndEvent);
+}
+
+void GamingScene::setRules()
+{
+    currentLevel++;
+    switch (currentLevel) {
+    case 1:
+        levelDoneCount = 100;
+        itemCounter = 1;
+        itemSpeed = visibleSize.width * -0.15f;
+        break;
+    case 2:
+        levelDoneCount = 25;
+        itemCounter = 2;
+        itemSpeed = visibleSize.width * -0.15f;
+        break;
+    case 3:
+        levelDoneCount = 40;
+        itemCounter = 3;
+        itemSpeed = visibleSize.width * -0.15f;
+        break;
+    }
+
+    if (currentLevel > 3)
+    {
+        levelDoneCount +=10 ;
+        itemCounter = 3;
+        itemSpeed = visibleSize.width * -0.15f;
+    }
 }

@@ -1,9 +1,9 @@
-#ifndef __GAMEOVER_SCENE_H__
-#define __GAMEOVER_SCENE_H__
+#ifndef __LEVEL_COMPLETE_SCENE_H__
+#define __LEVEL_COMPLETE_SCENE_H__
 
 #include "cocos2d.h"
 
-class GameOverScene : public cocos2d::Scene
+class LevelCompleteScene : public cocos2d::Scene
 {
 public:
     static cocos2d::Scene* createScene();
@@ -15,7 +15,7 @@ public:
     void menuCloseCallback(cocos2d::Ref* pSender);
     void createGamingScene(cocos2d::Ref* pSender);
     // implement the "static create()" method manually
-    CREATE_FUNC(GameOverScene);
+    CREATE_FUNC(LevelCompleteScene);
 };
 
-#endif // __GAMEOVER_SCENE_H__
+#endif // __LEVEL_COMPLETE_SCENE_H__
