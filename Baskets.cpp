@@ -48,7 +48,6 @@ Basket* Basket::createBasket(Layer* layer, int category)
         if (MyBodyParser::getInstance()->parseJsonFile("PhysicsBodies.json"))
         {
             basket->bodyBack = MyBodyParser::getInstance()->bodyFromJson(basket->spriteBack, nameBack, PHYSICSBODY_MATERIAL_DEFAULT);
-            basket->bodyBack->setContactTestBitmask(true);
             basket->bodyBack->setDynamic(false);
 
             basket->bodyForward = MyBodyParser::getInstance()->bodyFromJson(basket->spriteForward, nameForward, PHYSICSBODY_MATERIAL_DEFAULT);

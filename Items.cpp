@@ -68,16 +68,12 @@ Item* Item::createItem(Layer* layer)
         layer->addChild(item);
         return item;
     }
-
-    if (item && item->init())
-    {
-        item->autorelease();
-    }
     else
     {
         CC_SAFE_RELEASE(item);
     }
-
+    
+    
     return item;
 }
 

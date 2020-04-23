@@ -9,8 +9,9 @@
 USING_NS_CC;
 
 static const int DRAG_BODYS_TAG = 0x80;
-extern int score;
 extern Size visibleSize;
+extern int score;
+extern int lives;
 extern int currentLevel;
 extern int levelDoneCount;
 extern int itemCounter;
@@ -177,6 +178,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             //nodeA->removeAllComponents();
             //a->removeFromWorld();
             //nodeA->removeFromParentAndCleanup(true);
+            nodeA->removeComponent(a);
             nodeA->removeFromParent();
             score++;
             gs_scoreLabel->setString(std::to_string(score));
@@ -186,6 +188,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             //nodeB->removeAllComponents();
             //b->removeFromWorld();
             //nodeB->removeFromParentAndCleanup(true);
+            nodeB->removeComponent(b);
             nodeB->removeFromParent();
             score++;
             gs_scoreLabel->setString(std::to_string(score));
@@ -197,6 +200,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             //nodeA->removeAllComponents();
             //a->removeFromWorld();
             //nodeA->removeFromParentAndCleanup(true);
+            nodeA->removeComponent(a);
             nodeA->removeFromParent();
             score++;
             gs_scoreLabel->setString(std::to_string(score));
@@ -206,51 +210,72 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             //nodeB->removeAllComponents();
             //b->removeFromWorld();
             //nodeB->removeFromParentAndCleanup(true);
+            nodeB->removeComponent(b);
             nodeB->removeFromParent();
             score++;
             gs_scoreLabel->setString(std::to_string(score));
         }
 
         //Условие, при котором игра заканчивается, если фрукт попал в корзину для овощей
-        if (a->getCollisionBitmask() == 4 && b->getCollisionBitmask() == 1)
+        if (a->getCollisionBitmask() != 4 && b->getCollisionBitmask() == 2)
         {
+            nodeA->removeComponent(a);
+            nodeA->removeFromParent();
+            lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
-            Director::getInstance()->replaceScene(GameOverScene);
+            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
         }
-        else if (a->getCollisionBitmask() == 1 && b->getCollisionBitmask() == 4)
+        else if (a->getCollisionBitmask() == 2 && b->getCollisionBitmask() != 4)
         {
+            nodeB->removeComponent(b);
+            nodeB->removeFromParent();
+            lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
-            Director::getInstance()->replaceScene(GameOverScene);           
+            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
         }
 
         //Условие, при котором игра заканчивается, если овощь попал в корзину для фруктов
-        if (a->getCollisionBitmask() == 3 && b->getCollisionBitmask() == 2)
+        if (a->getCollisionBitmask() != 3 && b->getCollisionBitmask() == 1)
         {
+            nodeA->removeComponent(a);
+            nodeA->removeFromParent();
+            lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
-            Director::getInstance()->replaceScene(GameOverScene);
+            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
         }
-        else if (a->getCollisionBitmask() == 2 && b->getCollisionBitmask() == 3)
+        else if (a->getCollisionBitmask() == 1 && b->getCollisionBitmask() != 3)
         {
+            nodeB->removeComponent(b);
+            nodeB->removeFromParent();
+            lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
-            Director::getInstance()->replaceScene(GameOverScene);
+            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
         }
 
         if (a->getCollisionBitmask() == 5)
         {
+            nodeB->removeComponent(b);
+            nodeB->removeFromParent();
+            lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
-            Director::getInstance()->replaceScene(GameOverScene);
+            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
         }
         else if (b->getCollisionBitmask() == 5)
         {
+            nodeA->removeComponent(a);
+            nodeA->removeFromParent();
+            lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
-            Director::getInstance()->replaceScene(GameOverScene);
+            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
         }
-    }
+    
 
-    if (score == levelDoneCount)
-    {
+        if (score == levelDoneCount)
+        {
         auto LevelCompleteScene = LevelCompleteScene::createScene();
-        Director::getInstance()->replaceScene(TransitionProgressHorizontal::create(10, LevelCompleteScene));
+        Director::getInstance()->replaceScene(TransitionCrossFade::create(1, LevelCompleteScene));
+        }
+
     }
     //CCLOG("1");
     //CCLOG("2");
@@ -334,10 +359,9 @@ void GamingScene::menuCloseCallback(Ref* pSender)
 
 void GamingScene::setRules()
 {
-    currentLevel++;
     switch (currentLevel) {
     case 1:
-        levelDoneCount = 100;
+        levelDoneCount = 10;
         itemCounter = 1;
         itemSpeed = visibleSize.width * -0.15f;
         break;
@@ -353,10 +377,4 @@ void GamingScene::setRules()
         break;
     }
 
-    if (currentLevel > 3)
-    {
-        levelDoneCount +=10 ;
-        itemCounter = 3;
-        itemSpeed = visibleSize.width * -0.15f;
-    }
 }

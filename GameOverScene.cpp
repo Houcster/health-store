@@ -7,6 +7,7 @@
 USING_NS_CC;
 
 extern int score;
+extern int lives;
 extern int currentLevel;
 
 Scene* GameOverScene::createScene()
@@ -37,7 +38,7 @@ bool GameOverScene::init()
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-    gos_label = Label::createWithTTF("Your score was: " + std::to_string(score), "fonts/Marker Felt.ttf", 44);
+    gos_label = Label::createWithTTF("Your score was: " + std::to_string(score) + " , Lives: " + std::to_string(lives), "fonts/Marker Felt.ttf", 44);
     if (gos_label == nullptr)
     {
         problemLoading("'fonts/Marker Felt.ttf'");
@@ -60,9 +61,7 @@ bool GameOverScene::init()
     menu_item_1->setPosition(Size(480.0f, 250.0f));
     menu_item_2->setPosition(Size(480.0f, 150.0f));
 
-    auto* menu = Menu::create(menu_item_1,
-        menu_item_2,
-        NULL);
+    auto* menu = Menu::create(menu_item_1, menu_item_2, NULL);
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
 
@@ -72,10 +71,19 @@ bool GameOverScene::init()
 void GameOverScene::createGamingScene(Ref* pSender)
 {
     //Метод создаёт игровую сцену(Gaming Scene), при этом текущая сцена(MainMenuScene) удаляется
-    currentLevel = 0;
-    score = 0;
-    auto GamingScene = GamingScene::createScene();
-    Director::getInstance()->replaceScene(GamingScene);
+    if (lives != 0)
+    {
+        auto GamingScene = GamingScene::createScene();
+        Director::getInstance()->replaceScene(GamingScene);
+    }
+    else
+    {
+        lives = 3;
+        currentLevel = 1;
+        score = 0;
+        auto GamingScene = GamingScene::createScene();
+        Director::getInstance()->replaceScene(GamingScene);
+    }
 }
 
 void GameOverScene::menuCloseCallback(Ref* pSender)

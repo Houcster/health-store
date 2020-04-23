@@ -77,6 +77,11 @@ bool LevelCompleteScene::init()
 void LevelCompleteScene::createGamingScene(Ref* pSender)
 {
     //Метод создаёт игровую сцену(Gaming Scene), при этом текущая сцена(MainMenuScene) удаляется
+    currentLevel++;
+    if (currentLevel > 3)
+    {
+        levelDoneCount += 20;
+    }
     auto GamingScene = GamingScene::createScene();
     Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GamingScene));
 }
