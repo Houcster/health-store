@@ -8,6 +8,7 @@
 USING_NS_CC;
 
 extern int score;
+extern int highScore;
 extern int currentLevel;
 extern int levelDoneCount;
 extern Size visibleSize;
@@ -57,6 +58,14 @@ bool LevelCompleteScene::init()
         this->addChild(gos_label, 1);
     }
 
+    if (score > highScore)
+    {
+        UserDefault* def = UserDefault::getInstance();
+        highScore = score;
+        def->setIntegerForKey("HIGHSCORE", highScore);
+        def->flush();
+    }
+
     auto menu_item_1 = MenuItemFont::create("Continue",
         CC_CALLBACK_1(LevelCompleteScene::createGamingScene, this));
     auto menu_item_2 = MenuItemFont::create("Exit",
@@ -77,6 +86,7 @@ bool LevelCompleteScene::init()
 void LevelCompleteScene::createGamingScene(Ref* pSender)
 {
     //Метод создаёт игровую сцену(Gaming Scene), при этом текущая сцена(MainMenuScene) удаляется
+
     currentLevel++;
     if (currentLevel > 3)
     {

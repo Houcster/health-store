@@ -7,6 +7,7 @@
 USING_NS_CC;
 
 extern int score;
+extern int highScore;
 extern int lives;
 extern int currentLevel;
 
@@ -51,6 +52,14 @@ bool GameOverScene::init()
 
         // add the label as a child to this layer
         this->addChild(gos_label, 1);
+    }
+
+    if (score > highScore)
+    {
+        UserDefault* def = UserDefault::getInstance();
+        highScore = score;
+        def->setIntegerForKey("HIGHSCORE", highScore);
+        def->flush();
     }
 
     auto menu_item_1 = MenuItemFont::create("Play again",

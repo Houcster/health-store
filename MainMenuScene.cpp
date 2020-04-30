@@ -6,6 +6,7 @@
 
 USING_NS_CC;
 extern Size visibleSize;
+extern int highScore;
 
 Scene* MainMenuScene::createScene()
 {
@@ -33,35 +34,66 @@ bool MainMenuScene::init()
     this->addChild(_bgColor, -10);
 
     visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+    //Vec2 origin = Director::getInstance()->getVisibleOrigin();
+    auto glview = Director::getInstance()->getOpenGLView();
+    auto screenSize = glview->getFrameSize();
 
-    auto label = Label::createWithTTF("Oh hi Mark", "fonts/Marker Felt.ttf", 24);
-    if (label == nullptr)
-    {
-        problemLoading("'fonts/Marker Felt.ttf'");
-    }
-    else
-    {
-        // position the label on the center of the screen
-        label->setPosition(Vec2(origin.x + visibleSize.width/2,
-                                origin.y + visibleSize.height - label->getContentSize().height));
+    auto mainMenuBGSprite = Sprite::createWithSpriteFrameName("mainMenuBG");
+    mainMenuBGSprite->setContentSize(Size(visibleSize.width, visibleSize.height));
+    mainMenuBGSprite->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.5f);
+    addChild(mainMenuBGSprite);
 
-        // add the label as a child to this layer
-        this->addChild(label, 1);
-    }
+    auto label = Label::createWithTTF("High score: " + std::to_string(highScore), "fonts/Marker Felt.ttf", 34);
+    label->setPosition(visibleSize.width * 0.8f, visibleSize.height * 0.9f);
+    label->setColor(Color3B::GREEN);
+    addChild(label, 1);
 
-    auto menu_item_1 = MenuItemFont::create("Play", 
-                                            CC_CALLBACK_1(MainMenuScene::createGamingScene, this));
-    auto menu_item_2 = MenuItemFont::create("Exit", 
-                                            CC_CALLBACK_1(MainMenuScene::menuCloseCallback, this));
+    auto playItem = MenuItemSprite::create(
+        Sprite::createWithSpriteFrameName("playButton"),
+        Sprite::createWithSpriteFrameName("playButtonPressed"),
+        CC_CALLBACK_1(MainMenuScene::menuPlayCallback, this));
 
-    menu_item_1->setPosition(visibleSize.width / 2, 
-                             (visibleSize.height / 3) * 2);
-    menu_item_2->setPosition(visibleSize.width / 2, 
-                             (visibleSize.height / 3) * 1);
+    playItem->setPosition(visibleSize.width * 0.295f, visibleSize.height * 0.58f);     
+    //playItem->setScale(visibleSize.width * 0.000225f);
+    playItem->setScale(screenSize.width* 0.000225f);
 
-    auto* menu = Menu::create(menu_item_1, 
-                              menu_item_2, 
+    auto closeItem = MenuItemSprite::create(
+        Sprite::createWithSpriteFrameName("closeButton"),
+        Sprite::createWithSpriteFrameName("closeButtonPressed"),
+        CC_CALLBACK_1(MainMenuScene::menuCloseCallback, this));
+
+    closeItem->setPosition(visibleSize.width * 0.85f, visibleSize.height * 0.12f);
+    closeItem->setScale(screenSize.width * 0.000225f);
+
+    auto soundItem = MenuItemSprite::create(
+        Sprite::createWithSpriteFrameName("soundButton"),
+        Sprite::createWithSpriteFrameName("soundButtonPressed"),
+        NULL);
+
+    soundItem->setPosition(visibleSize.width * 0.125f, visibleSize.height * 0.22f);
+    soundItem->setScale(screenSize.width * 0.000225f);
+
+    auto rulesItem = MenuItemSprite::create(
+        Sprite::createWithSpriteFrameName("rulesButton"),
+        Sprite::createWithSpriteFrameName("rulesButtonPressed"),
+        NULL);
+
+    rulesItem->setPosition(visibleSize.width * 0.295f, visibleSize.height * 0.22f);
+    rulesItem->setScale(screenSize.width * 0.000225f);
+
+    auto infoItem = MenuItemSprite::create(
+        Sprite::createWithSpriteFrameName("infoButton"),
+        Sprite::createWithSpriteFrameName("infoButtonPressed"),
+        NULL);
+
+    infoItem->setPosition(visibleSize.width * 0.465f, visibleSize.height * 0.22f);
+    infoItem->setScale(screenSize.width * 0.000225f);
+
+    auto* menu = Menu::create(playItem, 
+                              closeItem,
+                              soundItem,
+                              rulesItem,
+                              infoItem,
                               NULL);
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
@@ -76,6 +108,19 @@ void MainMenuScene::createGamingScene(Ref* pSender)
     Director::getInstance()->pushScene(GamingScene);  
     //auto SubLevelScene = LevelCompleteScene::createScene();
     //Director::getInstance()->pushScene(SubLevelScene);
+}
+
+void MainMenuScene::menuPlayCallback(Ref* pSender)
+{
+    //Close the cocos2d-x game scene and quit the application
+    auto GamingScene = GamingScene::createScene();
+    Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GamingScene));
+
+    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() as given above,instead trigger a custom event created in RootViewController.mm as below*/
+
+    //EventCustom customEndEvent("game_scene_close_event");
+    //_eventDispatcher->dispatchEvent(&customEndEvent);
+
 }
 
 void MainMenuScene::menuCloseCallback(Ref* pSender)

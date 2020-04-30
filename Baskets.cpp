@@ -7,39 +7,63 @@ extern Size visibleSize;
 Basket* Basket::createBasket(Layer* layer, int category)
 {
     Size position;
+    Size size;
     std::string nameBack;
     std::string nameForward;
     int collisionBitmask;
 
-    if (category == 1)
-    {
-        position = Size(visibleSize.width * 0.2f, visibleSize.height * 0.265f);
+    switch (category) {
+    case 1:
+        position = Size(visibleSize.width * 0.25f, visibleSize.height * 0.265f);
+        size = Size(visibleSize.width * 0.25f, visibleSize.height * 0.445f);
         nameBack = "fruitsBasketBack";
         nameForward = "fruitsBasketForward";
         collisionBitmask = 1;
-    }
-    else if (category == 2)
-    {
-        position = Size(visibleSize.width * 0.8f, visibleSize.height * 0.265f);
+        break;
+    case 2:
+        position = Size(visibleSize.width * 0.75f, visibleSize.height * 0.265f);
+        size = Size(visibleSize.width * 0.25f, visibleSize.height * 0.445f);
         nameBack = "veggiesBasketBack";
         nameForward = "veggiesBasketForward";
         collisionBitmask = 2;
+        break;
+    case 3:
+        position = Size(visibleSize.width * 0.38f, visibleSize.height * 0.265f);
+        size = Size(visibleSize.width * 0.25f, visibleSize.height * 0.445f);
+        nameBack = "fruitsBasketBack";
+        nameForward = "fruitsBasketForward";
+        collisionBitmask = 1;
+        break;
+    case 4:
+        position = Size(visibleSize.width * 0.78f, visibleSize.height * 0.265f);
+        size = Size(visibleSize.width * 0.25f, visibleSize.height * 0.445f);
+        nameBack = "veggiesBasketBack";
+        nameForward = "veggiesBasketForward";
+        collisionBitmask = 2;
+        break;
+    case 5:
+        position = Size(visibleSize.width * 0.09f, visibleSize.height * 0.38f);
+        size = Size(visibleSize.width * 0.2f, visibleSize.height * 0.345f);
+        nameBack = "recycleBack";
+        nameForward = "recycleForward";
+        collisionBitmask = 7;
+        break;
     }
-   
+
     auto basket = new (std::nothrow) Basket;
     if (basket && basket->init()) {
 
         basket->autorelease();
 
         basket->spriteBack = Sprite::createWithSpriteFrameName(nameBack);
-        basket->spriteBack->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.445f));
+        basket->spriteBack->setContentSize(size);
         basket->spriteBack->setPosition(position);
         basket->spriteBack->setGlobalZOrder(2);
         //basket->spriteBack->setOpacity(20);
         basket->addChild(basket->spriteBack);
 
         basket->spriteForward = Sprite::createWithSpriteFrameName(nameForward);
-        basket->spriteForward->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.445f));
+        basket->spriteForward->setContentSize(size);
         basket->spriteForward->setPosition(position);
         basket->spriteForward->setGlobalZOrder(4);
         //basket->spriteForward->setOpacity(20);
@@ -74,6 +98,10 @@ Basket* Basket::createBasket(Layer* layer, int category)
         layer->addChild(basket);
         return basket;
     }
-    CC_SAFE_RELEASE(basket);
+    else
+    {
+        CC_SAFE_RELEASE(basket);
+    }
+    
     return nullptr;
 }

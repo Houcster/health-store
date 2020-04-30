@@ -26,7 +26,7 @@ Scene* GamingScene::createScene()
     gamingScene->getPhysicsWorld()->setGravity(Vec2(0, -900));
 
     // optional: set debug draw
-    gamingScene->getPhysicsWorld()->setDebugDrawMask(0xffff);
+    //gamingScene->getPhysicsWorld()->setDebugDrawMask(0xffff);
 
     auto layer = GamingScene::create();
     gamingScene->addChild(layer);
@@ -121,14 +121,29 @@ bool GamingScene::init()
     barrierBody->setContactTestBitmask(true);
     barrierBody->setDynamic(false);
 
+    //auto bgSprite = Sprite::createWithSpriteFrameName("mainMenuBG");
+    //bgSprite->setContentSize(Size(visibleSize.width, visibleSize.height));
+    //bgSprite->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.5f);
+    //addChild(bgSprite);
+
     auto barrierSprite = Sprite::create("barrier.png");
     barrierSprite->setContentSize(Size(visibleSize.width * 0.015f, visibleSize.height * 0.52f));
     barrierSprite->setPosition(visibleSize.width * 0.0075f, visibleSize.height * 0.925f);
     barrierSprite->addComponent(barrierBody);
     addChild(barrierSprite);
 
-    auto fruitbasket = Basket::createBasket(this, 1);
-    auto veggiesbasket = Basket::createBasket(this, 2);
+    if (currentLevel < 4)
+    {
+        auto fruitbasket = Basket::createBasket(this, 1);
+        auto veggiesbasket = Basket::createBasket(this, 2);
+    }
+    else
+    {
+        auto fruitbasket = Basket::createBasket(this, 3);
+        auto veggiesbasket = Basket::createBasket(this, 4);
+        auto recycle = Basket::createBasket(this, 5);
+    }
+    
 
     auto bodiesContactListener = EventListenerPhysicsContact::create();
     bodiesContactListener->onContactBegin = CC_CALLBACK_1(GamingScene::onContactBegin, this);
@@ -152,7 +167,23 @@ bool GamingScene::init()
 
 void GamingScene::update(float dt)
 {
-    auto item = Item::createItem(this);
+    if (currentLevel < 4)
+    {
+        auto item = Item::createItem(this);
+    }
+    else
+    {
+        int random = cocos2d::RandomHelper::random_int(1, 100);
+        if (random >= 1 && random <= 75)
+        {
+            auto item = Item::createItem(this);
+        }
+        else if (random >= 76 && random <= 100)
+        {
+            auto item = Item::createBadItem(this);
+        }
+    }
+    
     //CCLOG("got");
 }
 
@@ -166,13 +197,17 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
 
     if (nodeA && nodeB)
     {
-        //”словие, при котором удал€ютс€ фрукты, если попали в корзину дл€ фруктов
+        
         //CollisionBitMask:
         //1 - корзина дл€ фруктов
         //2 - корзина дл€ овощей
         //3 - фрукты
         //4 - овощи
         //5 - барьер и земл€
+        //6 - мусор
+        //7 - мусорка
+        
+        //”словие, при котором удал€ютс€ фрукты, если попали в корзину дл€ фруктов
         if (a->getCollisionBitmask() == 3 && b->getCollisionBitmask() == 1)
         {
             //nodeA->removeAllComponents();
@@ -216,6 +251,28 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             gs_scoreLabel->setString(std::to_string(score));
         }
 
+        //”словие, при котором удал€етс€ мусор, если попал в мусорку
+        if (a->getCollisionBitmask() == 6 && b->getCollisionBitmask() == 7)
+        {
+            //nodeA->removeAllComponents();
+            //a->removeFromWorld();
+            //nodeA->removeFromParentAndCleanup(true);
+            nodeA->removeComponent(a);
+            nodeA->removeFromParent();
+            score++;
+            gs_scoreLabel->setString(std::to_string(score));
+        }
+        else if (a->getCollisionBitmask() == 7 && b->getCollisionBitmask() == 6)
+        {
+            //nodeB->removeAllComponents();
+            //b->removeFromWorld();
+            //nodeB->removeFromParentAndCleanup(true);
+            nodeB->removeComponent(b);
+            nodeB->removeFromParent();
+            score++;
+            gs_scoreLabel->setString(std::to_string(score));
+        }
+
         //”словие, при котором игра заканчиваетс€, если фрукт попал в корзину дл€ овощей
         if (a->getCollisionBitmask() != 4 && b->getCollisionBitmask() == 2)
         {
@@ -234,7 +291,24 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
         }
 
-        //”словие, при котором игра заканчиваетс€, если овощь попал в корзину дл€ фруктов
+        //”словие, при котором игра заканчиваетс€, если в мусорку попало что-то не то
+        if (a->getCollisionBitmask() != 6 && b->getCollisionBitmask() == 7)
+        {
+            nodeA->removeComponent(a);
+            nodeA->removeFromParent();
+            lives -= 1;
+            auto GameOverScene = GameOverScene::createScene();
+            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
+        }
+        else if (a->getCollisionBitmask() == 7 && b->getCollisionBitmask() != 6)
+        {
+            nodeB->removeComponent(b);
+            nodeB->removeFromParent();
+            lives -= 1;
+            auto GameOverScene = GameOverScene::createScene();
+            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
+        }
+
         if (a->getCollisionBitmask() != 3 && b->getCollisionBitmask() == 1)
         {
             nodeA->removeComponent(a);

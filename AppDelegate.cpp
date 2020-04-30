@@ -20,6 +20,7 @@ using namespace CocosDenshion;
 USING_NS_CC;
 
 static cocos2d::Size designResolutionSize = cocos2d::Size(960, 540);
+//static cocos2d::Size designResolutionSize = cocos2d::Size(1920, 1080);
 static cocos2d::Size smallResolutionSize = cocos2d::Size(960, 540);
 static cocos2d::Size mediumResolutionSize = cocos2d::Size(1920, 1080);
 static cocos2d::Size largeResolutionSize = cocos2d::Size(2560, 1440);
@@ -29,6 +30,8 @@ int score = 0;
 int lives = 3;
 int levelDoneCount = 0;
 int itemCounter = 0;
+int badItemCounter = 0;
+int highScore = 0;
 float itemSpeed = 0;
 
 AppDelegate::AppDelegate()
@@ -108,6 +111,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
     spritecache->addSpriteFramesWithFile("hs_spritesheet.plist");
 
     visibleSize = Director::getInstance()->getVisibleSize();
+
+    UserDefault* def = UserDefault::getInstance();
+
+    highScore = def->getIntegerForKey("HIGHSCORE", 0);
     // create a scene. it's an autorelease object
     auto MainMenuScene = MainMenuScene::createScene();
     // run
