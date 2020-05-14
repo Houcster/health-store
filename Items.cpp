@@ -11,10 +11,10 @@ extern int itemCounter;
 extern int badItemCounter;
 extern float itemSpeed;
 
-Item* Item::createItem(Layer* layer)
+Item* Item::createItem()
 {
-    std::string fruits[4] = { "orange", "pineapple", "banana", "lemon"};
-    std::string veggies[4] = { "beetroot", "tomat", "onion", "brokkoli"};
+    std::string fruits[4] = { "orange", "pineapple", "banana", "lemon" };
+    std::string veggies[4] = { "beetroot", "tomat", "onion", "brokkoli" };
     std::string name;
     int collisionBitmask;
 
@@ -38,7 +38,7 @@ Item* Item::createItem(Layer* layer)
         item->sprite->setContentSize(Size(visibleSize.width * 0.105f, visibleSize.height * 0.185f));
         item->sprite->setPosition(visibleSize.width * 0.95f, visibleSize.height * 0.8);
         item->sprite->setGlobalZOrder(3);
-        //item->sprite->setOpacity(40);
+        //item->sprite->setOpacity(70);
 
         if (MyBodyParser::getInstance()->parseJsonFile("PhysicsBodies.json"))
         {
@@ -66,18 +66,18 @@ Item* Item::createItem(Layer* layer)
         item->body->setVelocity(Vec2(itemSpeed, 0));
 
         item->addChild(item->sprite);
-        layer->addChild(item);
+        //layer->addChild(item);
         return item;
     }
     else
     {
         CC_SAFE_RELEASE(item);
     }
-       
+
     return item;
 }
 
-Item* Item::createBadItem(Layer* layer)
+Item* Item::createBadItem()
 {
     std::string badItems[1] = { "cigarettes" };
     std::string name;
@@ -121,7 +121,7 @@ Item* Item::createBadItem(Layer* layer)
         item->body->setVelocity(Vec2(itemSpeed, 0));
 
         item->addChild(item->sprite);
-        layer->addChild(item);
+        //layer->addChild(item);
         return item;
     }
     else

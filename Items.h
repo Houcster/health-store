@@ -6,8 +6,8 @@
 class Item : public cocos2d::Node
 {
 public:
-    static Item* createItem(cocos2d::Layer* layer);
-    static Item* createBadItem(cocos2d::Layer* layer);
+    static Item* createItem();
+    static Item* createBadItem();
 
     cocos2d::Sprite* sprite;
     cocos2d::PhysicsBody* body;

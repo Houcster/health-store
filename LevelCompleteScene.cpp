@@ -105,5 +105,3 @@ void LevelCompleteScene::menuCloseCallback(Ref* pSender)
     //_eventDispatcher->dispatchEvent(&customEndEvent);
 
 }
-
-

@@ -102,6 +102,6 @@ Basket* Basket::createBasket(Layer* layer, int category)
     {
         CC_SAFE_RELEASE(basket);
     }
-    
+
     return nullptr;
 }

@@ -1,6 +1,20 @@
 #include "AppDelegate.h"
 #include "MainMenuScene.h"
-#include "GamingScene.h"
+#ifdef SDKBOX_ENABLED
+#include "PluginIAP/PluginIAP.h"
+#endif
+#ifdef SDKBOX_ENABLED
+#include "PluginUnityAds/PluginUnityAds.h"
+#endif
+#ifdef SDKBOX_ENABLED
+#include "PluginSdkboxAds/PluginSdkboxAds.h"
+#endif
+#ifdef SDKBOX_ENABLED
+#include "PluginAdMob/PluginAdMob.h"
+#endif
+#ifdef SDKBOX_ENABLED
+#include "PluginChartboost/PluginChartboost.h"
+#endif
 
 // #define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1
@@ -20,10 +34,10 @@ using namespace CocosDenshion;
 USING_NS_CC;
 
 static cocos2d::Size designResolutionSize = cocos2d::Size(960, 540);
-//static cocos2d::Size designResolutionSize = cocos2d::Size(1920, 1080);
 static cocos2d::Size smallResolutionSize = cocos2d::Size(960, 540);
-static cocos2d::Size mediumResolutionSize = cocos2d::Size(1920, 1080);
-static cocos2d::Size largeResolutionSize = cocos2d::Size(2560, 1440);
+static cocos2d::Size mediumResolutionSize = cocos2d::Size(1024, 768);
+static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
+
 Size visibleSize;
 int currentLevel = 1;
 int score = 0;
@@ -65,6 +79,21 @@ static int register_all_packages()
 }
 
 bool AppDelegate::applicationDidFinishLaunching() {
+#ifdef SDKBOX_ENABLED
+    sdkbox::IAP::init();
+#endif
+#ifdef SDKBOX_ENABLED
+    sdkbox::PluginUnityAds::init();
+#endif
+#ifdef SDKBOX_ENABLED
+    sdkbox::PluginSdkboxAds::init();
+#endif
+#ifdef SDKBOX_ENABLED
+    sdkbox::PluginAdMob::init();
+#endif
+#ifdef SDKBOX_ENABLED
+    sdkbox::PluginChartboost::init();
+#endif
     // initialize director
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
@@ -78,7 +107,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     }
 
     // turn on display FPS
-    //director->setDisplayStats(true);
+    director->setDisplayStats(true);
 
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0f / 60);
@@ -102,11 +131,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
         director->setContentScaleFactor(MIN(smallResolutionSize.height/designResolutionSize.height, smallResolutionSize.width/designResolutionSize.width));
     }
 
-    
-
     register_all_packages();
 
-    // загрузка Sprite Sheet
+    //Грузим Sprite Sheet
     auto spritecache = SpriteFrameCache::getInstance();
     spritecache->addSpriteFramesWithFile("hs_spritesheet.plist");
 
@@ -119,7 +146,6 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto MainMenuScene = MainMenuScene::createScene();
     // run
     director->runWithScene(MainMenuScene);
-
 
     return true;
 }

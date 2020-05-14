@@ -15,3 +15,4 @@ public:
     void clearCache();
     PhysicsBody* bodyFromJson(Node* pNode, const std::string& name, PhysicsMaterial material);
 };
+

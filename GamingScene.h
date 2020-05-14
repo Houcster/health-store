@@ -12,7 +12,7 @@ public:
 
     void setRules();
     cocos2d::Label* gs_levelLabel;
-    cocos2d::Label* gs_scoreLabel; 
+    cocos2d::Label* gs_scoreLabel;
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
     void changeLabelColor(cocos2d::Ref* pSender, cocos2d::Label* label);
@@ -33,3 +33,4 @@ protected:
 };
 
 #endif // __GAMING_SCENE_H__
+

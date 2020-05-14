@@ -18,4 +18,4 @@ public:
     CREATE_FUNC(GameOverScene);
 };
 
-#endif // __GAMEOVER_SCENE_H__
+#endif // __GAMEOVER_SCEN

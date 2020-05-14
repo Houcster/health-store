@@ -25,13 +25,10 @@ bool MainMenuScene::init()
 {
     //////////////////////////////
     // 1. super init first
-    if ( !Scene::init() )
+    if (!Scene::init())
     {
         return false;
     }
-
-    LayerColor* _bgColor = LayerColor::create(Color4B(124, 130, 130, 255));
-    this->addChild(_bgColor, -10);
 
     visibleSize = Director::getInstance()->getVisibleSize();
     //Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -45,7 +42,7 @@ bool MainMenuScene::init()
 
     auto label = Label::createWithTTF("High score: " + std::to_string(highScore), "fonts/Marker Felt.ttf", 34);
     label->setPosition(visibleSize.width * 0.8f, visibleSize.height * 0.9f);
-    label->setColor(Color3B::GREEN);
+    label->setColor(Color3B::BLACK);
     addChild(label, 1);
 
     auto playItem = MenuItemSprite::create(
@@ -53,9 +50,10 @@ bool MainMenuScene::init()
         Sprite::createWithSpriteFrameName("playButtonPressed"),
         CC_CALLBACK_1(MainMenuScene::menuPlayCallback, this));
 
-    playItem->setPosition(visibleSize.width * 0.295f, visibleSize.height * 0.58f);     
-    //playItem->setScale(visibleSize.width * 0.000225f);
-    playItem->setScale(screenSize.width* 0.000225f);
+    playItem->setPosition(visibleSize.width * 0.295f, visibleSize.height * 0.58f);
+    playItem->setContentSize(Size(visibleSize.width * 0.205f, visibleSize.height * 0.25f));
+    playItem->getNormalImage()->setContentSize(playItem->getContentSize());
+    playItem->getSelectedImage()->setContentSize(playItem->getContentSize());
 
     auto closeItem = MenuItemSprite::create(
         Sprite::createWithSpriteFrameName("closeButton"),
@@ -63,7 +61,11 @@ bool MainMenuScene::init()
         CC_CALLBACK_1(MainMenuScene::menuCloseCallback, this));
 
     closeItem->setPosition(visibleSize.width * 0.85f, visibleSize.height * 0.12f);
-    closeItem->setScale(screenSize.width * 0.000225f);
+    closeItem->setContentSize(Size(visibleSize.width * 0.1f, visibleSize.height * 0.1775f));
+    closeItem->getNormalImage()->setContentSize(closeItem->getContentSize());
+    closeItem->getSelectedImage()->setContentSize(closeItem->getContentSize());
+
+    //closeItem->setScale(screenSize.width * 0.000225f);
 
     auto soundItem = MenuItemSprite::create(
         Sprite::createWithSpriteFrameName("soundButton"),
@@ -71,7 +73,9 @@ bool MainMenuScene::init()
         NULL);
 
     soundItem->setPosition(visibleSize.width * 0.125f, visibleSize.height * 0.22f);
-    soundItem->setScale(screenSize.width * 0.000225f);
+    soundItem->setContentSize(Size(visibleSize.width * 0.1f, visibleSize.height * 0.1775f));
+    soundItem->getNormalImage()->setContentSize(soundItem->getContentSize());
+    soundItem->getSelectedImage()->setContentSize(soundItem->getContentSize());
 
     auto rulesItem = MenuItemSprite::create(
         Sprite::createWithSpriteFrameName("rulesButton"),
@@ -79,7 +83,9 @@ bool MainMenuScene::init()
         NULL);
 
     rulesItem->setPosition(visibleSize.width * 0.295f, visibleSize.height * 0.22f);
-    rulesItem->setScale(screenSize.width * 0.000225f);
+    rulesItem->setContentSize(Size(visibleSize.width * 0.1f, visibleSize.height * 0.1775f));
+    rulesItem->getNormalImage()->setContentSize(rulesItem->getContentSize());
+    rulesItem->getSelectedImage()->setContentSize(rulesItem->getContentSize());
 
     auto infoItem = MenuItemSprite::create(
         Sprite::createWithSpriteFrameName("infoButton"),
@@ -87,14 +93,16 @@ bool MainMenuScene::init()
         NULL);
 
     infoItem->setPosition(visibleSize.width * 0.465f, visibleSize.height * 0.22f);
-    infoItem->setScale(screenSize.width * 0.000225f);
+    infoItem->setContentSize(Size(visibleSize.width * 0.1f, visibleSize.height * 0.1775f));
+    infoItem->getNormalImage()->setContentSize(infoItem->getContentSize());
+    infoItem->getSelectedImage()->setContentSize(infoItem->getContentSize());
 
-    auto* menu = Menu::create(playItem, 
-                              closeItem,
-                              soundItem,
-                              rulesItem,
-                              infoItem,
-                              NULL);
+    auto* menu = Menu::create(playItem,
+        closeItem,
+        soundItem,
+        rulesItem,
+        infoItem,
+        NULL);
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
 
@@ -104,8 +112,8 @@ bool MainMenuScene::init()
 void MainMenuScene::createGamingScene(Ref* pSender)
 {
     //Метод создаёт игровую сцену(Gaming Scene), при этом текущая сцена(MainMenuScene) удаляется
-    auto GamingScene = GamingScene::createScene();  
-    Director::getInstance()->pushScene(GamingScene);  
+    auto GamingScene = GamingScene::createScene();
+    Director::getInstance()->pushScene(GamingScene);
     //auto SubLevelScene = LevelCompleteScene::createScene();
     //Director::getInstance()->pushScene(SubLevelScene);
 }
