@@ -1,5 +1,4 @@
 #include "MainMenuScene.h"
-#include "GameOverScene.h"
 #include "GamingScene.h"
 #include "AppDelegate.h"
 #include "SimpleAudioEngine.h"
@@ -14,6 +13,9 @@ extern int levelDoneCount;
 extern Size visibleSize;
 extern int itemCounter;
 extern float itemSpeed;
+extern int lives;
+extern int badItemCounter;
+
 
 Scene* LevelCompleteScene::createScene()
 {
@@ -40,10 +42,14 @@ bool LevelCompleteScene::init()
     LayerColor* _bgColor = LayerColor::create(Color4B(157, 187, 227, 255));
     this->addChild(_bgColor, -10);
 
-    auto visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+    Vec2 origin = Director::getInstance()->getVisibleOrigin();\
 
-    gos_label = Label::createWithTTF("You complete level: " + std::to_string(currentLevel), "fonts/Marker Felt.ttf", 44);
+    auto completeLevelBGSprite = Sprite::createWithSpriteFrameName("completeLevelBG");
+    completeLevelBGSprite->setContentSize(Size(visibleSize.width, visibleSize.height));
+    completeLevelBGSprite->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.5f);
+    addChild(completeLevelBGSprite);
+
+    gos_label = Label::createWithTTF("You complete level: " + std::to_string(currentLevel), "fonts/arial.ttf", 44);
     if (gos_label == nullptr)
     {
         problemLoading("'fonts/Marker Felt.ttf'");
@@ -51,9 +57,8 @@ bool LevelCompleteScene::init()
     else
     {
         // position the label on the center of the screen
-        gos_label->setPosition(Vec2(origin.x + visibleSize.width / 2,
-            origin.y + visibleSize.height / 1.4f));
-
+        gos_label->setPosition(visibleSize.width * 0.4f, visibleSize.height * 0.75f);
+        gos_label->setColor(Color3B::BLACK);
         // add the label as a child to this layer
         this->addChild(gos_label, 1);
     }
@@ -66,17 +71,29 @@ bool LevelCompleteScene::init()
         def->flush();
     }
 
-    auto menu_item_1 = MenuItemFont::create("Continue",
+    auto nextItem = MenuItemSprite::create(
+        Sprite::createWithSpriteFrameName("cmplvlNiceButton"),
+        Sprite::createWithSpriteFrameName("cmplvlNiceButtonPressed"),
         CC_CALLBACK_1(LevelCompleteScene::createGamingScene, this));
-    auto menu_item_2 = MenuItemFont::create("Exit",
-        CC_CALLBACK_1(LevelCompleteScene::menuCloseCallback, this));
 
-    menu_item_1->setPosition(Size(480.0f, 250.0f));
-    menu_item_2->setPosition(Size(480.0f, 150.0f));
+    nextItem->setPosition(visibleSize.width * 0.4f, visibleSize.height * 0.52f);
+    nextItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1585f));
+    nextItem->getNormalImage()->setContentSize(nextItem->getContentSize());
+    nextItem->getSelectedImage()->setContentSize(nextItem->getContentSize());
 
-    auto* menu = Menu::create(menu_item_1,
-        menu_item_2,
-        NULL);
+    auto mainMenuItem = MenuItemSprite::create(
+        Sprite::createWithSpriteFrameName("cmplvlMenuButton"),
+        Sprite::createWithSpriteFrameName("cmplvlMenuButtonPressed"),
+        CC_CALLBACK_1(LevelCompleteScene::createMainMenuScene, this));
+
+    mainMenuItem->setPosition(visibleSize.width * 0.4f, visibleSize.height * 0.32f);
+    mainMenuItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1585f));
+    mainMenuItem->getNormalImage()->setContentSize(mainMenuItem->getContentSize());
+    mainMenuItem->getSelectedImage()->setContentSize(mainMenuItem->getContentSize());
+
+    auto* menu = Menu::create(nextItem,
+                              mainMenuItem,      
+                              NULL);
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
 
@@ -88,7 +105,7 @@ void LevelCompleteScene::createGamingScene(Ref* pSender)
     //Метод создаёт игровую сцену(Gaming Scene), при этом текущая сцена(MainMenuScene) удаляется
 
     currentLevel++;
-    if (currentLevel > 3)
+    if (currentLevel > 4)
     {
         levelDoneCount += 20;
     }
@@ -96,12 +113,17 @@ void LevelCompleteScene::createGamingScene(Ref* pSender)
     Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GamingScene));
 }
 
-void LevelCompleteScene::menuCloseCallback(Ref* pSender)
+void LevelCompleteScene::createMainMenuScene(Ref* pSender)
 {
-    //Close the cocos2d-x game scene and quit the application
-    Director::getInstance()->end();
-    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() as given above,instead trigger a custom event created in RootViewController.mm as below*/
-    //EventCustom customEndEvent("game_scene_close_event");
-    //_eventDispatcher->dispatchEvent(&customEndEvent);
+    currentLevel = 1;
+    score = 0;
+    lives = 3;
+    levelDoneCount = 0;
+    itemCounter = 0;
+    badItemCounter = 0;
+    highScore = 0;
+    itemSpeed = 0;
+    auto MainMenuScene = MainMenuScene::createScene();
+    Director::getInstance()->replaceScene(TransitionCrossFade::create(1, MainMenuScene));
 
 }

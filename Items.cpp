@@ -13,8 +13,8 @@ extern float itemSpeed;
 
 Item* Item::createItem()
 {
-    std::string fruits[4] = { "orange", "pineapple", "banana", "lemon" };
-    std::string veggies[4] = { "beetroot", "tomat", "onion", "brokkoli" };
+    std::string fruits[5] = { "orange", "pineapple", "banana", "lemon", "peach" };
+    std::string veggies[5] = { "beetroot", "tomat", "onion", "brokkoli", "carrot" };
     std::string name;
     int collisionBitmask;
 

@@ -54,8 +54,13 @@ bool GamingScene::init()
 
     setRules();
 
-    LayerColor* _bgColor = LayerColor::create(Color4B(124, 130, 130, 255));
-    this->addChild(_bgColor, -10);
+    //LayerColor* _bgColor = LayerColor::create(Color4B(124, 130, 130, 255));
+    //this->addChild(_bgColor, -10);
+
+    auto gamingSceneBGSprite = Sprite::createWithSpriteFrameName("inGameBG");
+    gamingSceneBGSprite->setContentSize(Size(visibleSize.width, visibleSize.height));
+    gamingSceneBGSprite->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.5f);
+    addChild(gamingSceneBGSprite);
 
     visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -66,7 +71,7 @@ bool GamingScene::init()
     // add a label shows "Hello World"
     // create and initialize a label
 
-    gs_levelLabel = Label::createWithTTF("Level: " + std::to_string(currentLevel), "fonts/Marker Felt.ttf", 24);
+    gs_levelLabel = Label::createWithTTF("Level: " + std::to_string(currentLevel), "fonts/arial.ttf", 24);
     if (gs_levelLabel == nullptr)
     {
         problemLoading("'fonts/Marker Felt.ttf'");
@@ -74,13 +79,13 @@ bool GamingScene::init()
     else
     {
         // position the label on the center of the screen
-        gs_levelLabel->setPosition(Vec2(visibleSize.width * 0.1f, visibleSize.height * 0.964f));
-
+        gs_levelLabel->setPosition(Vec2(visibleSize.width * 0.05f, visibleSize.height * 0.964f));
+        gs_levelLabel->setColor(Color3B::BLACK);
         // add the label as a child to this layer
         this->addChild(gs_levelLabel, 1);
     }
 
-    gs_scoreLabel = Label::createWithTTF(std::to_string(score), "fonts/Marker Felt.ttf", 24);
+    gs_scoreLabel = Label::createWithTTF(std::to_string(score), "fonts/arial.ttf", 24);
     if (gs_scoreLabel == nullptr)
     {
         problemLoading("'fonts/Marker Felt.ttf'");
@@ -89,7 +94,7 @@ bool GamingScene::init()
     {
         // position the label on the center of the screen
         gs_scoreLabel->setPosition(Vec2(visibleSize.width * 0.5f, visibleSize.height * 0.964f));
-
+        gs_scoreLabel->setColor(Color3B::BLACK);
         // add the label as a child to this layer
         this->addChild(gs_scoreLabel, 1);
     }
@@ -116,7 +121,7 @@ bool GamingScene::init()
     addChild(groundNode);
 
 
-    auto barrierBody = PhysicsBody::createBox(Size(visibleSize.width * 0.015f, visibleSize.height * 0.52f), PHYSICSBODY_MATERIAL_DEFAULT);
+    auto barrierBody = PhysicsBody::createBox(Size(visibleSize.width * 0.07f, visibleSize.height * 0.52f), PHYSICSBODY_MATERIAL_DEFAULT);
     barrierBody->setCollisionBitmask(5);
     barrierBody->setContactTestBitmask(true);
     barrierBody->setDynamic(false);
@@ -126,11 +131,10 @@ bool GamingScene::init()
     //bgSprite->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.5f);
     //addChild(bgSprite);
 
-    auto barrierSprite = Sprite::create("barrier.png");
-    barrierSprite->setContentSize(Size(visibleSize.width * 0.015f, visibleSize.height * 0.52f));
-    barrierSprite->setPosition(visibleSize.width * 0.0075f, visibleSize.height * 0.925f);
-    barrierSprite->addComponent(barrierBody);
-    addChild(barrierSprite);
+    auto barrierNode = Node::create();
+    barrierNode->setPosition(visibleSize.width * 0.0075f, visibleSize.height * 0.925f);
+    barrierNode->addComponent(barrierBody);
+    addChild(barrierNode);
 
     if (currentLevel < 4)
     {
@@ -427,7 +431,7 @@ bool GamingScene::onTouchBegan(Touch* touch, Event* event)
         mouse->getPhysicsBody()->setDynamic(false);
         mouse->setPosition(location);
         this->addChild(mouse);
-        auto joint = PhysicsJointPin::construct(mouse->getPhysicsBody(), body, location);
+        auto joint = PhysicsJointFixed::construct(mouse->getPhysicsBody(), body, location);
         joint->setMaxForce(4000.0f * body->getMass());
         this->getScene()->getPhysicsWorld()->addJoint(joint);
         _mouses.insert(std::make_pair(touch->getID(), mouse));
@@ -493,6 +497,16 @@ void GamingScene::setRules()
     case 3:
         levelDoneCount = 40;
         itemCounter = 3;
+        itemSpeed = visibleSize.width * -0.15f;
+        break;
+    case 4:
+        levelDoneCount = 55;
+        itemCounter = 3;
+        itemSpeed = visibleSize.width * -0.15f;
+        break;
+    case 5:
+        levelDoneCount = 70;
+        itemCounter = 4;
         itemSpeed = visibleSize.width * -0.15f;
         break;
     }

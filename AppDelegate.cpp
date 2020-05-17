@@ -1,5 +1,6 @@
 #include "AppDelegate.h"
 #include "MainMenuScene.h"
+#include "LevelCompleteScene.h"
 #ifdef SDKBOX_ENABLED
 #include "PluginIAP/PluginIAP.h"
 #endif
@@ -34,9 +35,10 @@ using namespace CocosDenshion;
 USING_NS_CC;
 
 static cocos2d::Size designResolutionSize = cocos2d::Size(960, 540);
+//static cocos2d::Size designResolutionSize = cocos2d::Size(1920, 1080);
 static cocos2d::Size smallResolutionSize = cocos2d::Size(960, 540);
-static cocos2d::Size mediumResolutionSize = cocos2d::Size(1024, 768);
-static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
+static cocos2d::Size mediumResolutionSize = cocos2d::Size(1920, 1080);
+static cocos2d::Size largeResolutionSize = cocos2d::Size(2560, 1440);
 
 Size visibleSize;
 int currentLevel = 1;
@@ -107,7 +109,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     }
 
     // turn on display FPS
-    director->setDisplayStats(true);
+    //director->setDisplayStats(true);
 
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0f / 60);
@@ -143,6 +145,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     highScore = def->getIntegerForKey("HIGHSCORE", 0);
     // create a scene. it's an autorelease object
+
     auto MainMenuScene = MainMenuScene::createScene();
     // run
     director->runWithScene(MainMenuScene);

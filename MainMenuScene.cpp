@@ -40,8 +40,8 @@ bool MainMenuScene::init()
     mainMenuBGSprite->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.5f);
     addChild(mainMenuBGSprite);
 
-    auto label = Label::createWithTTF("High score: " + std::to_string(highScore), "fonts/Marker Felt.ttf", 34);
-    label->setPosition(visibleSize.width * 0.8f, visibleSize.height * 0.9f);
+    auto label = Label::createWithTTF("High score: " + std::to_string(highScore), "fonts/arial.ttf", 40);
+    label->setPosition(visibleSize.width * 0.75f, visibleSize.height * 0.85f);
     label->setColor(Color3B::BLACK);
     addChild(label, 1);
 
@@ -50,8 +50,8 @@ bool MainMenuScene::init()
         Sprite::createWithSpriteFrameName("playButtonPressed"),
         CC_CALLBACK_1(MainMenuScene::menuPlayCallback, this));
 
-    playItem->setPosition(visibleSize.width * 0.295f, visibleSize.height * 0.58f);
-    playItem->setContentSize(Size(visibleSize.width * 0.205f, visibleSize.height * 0.25f));
+    playItem->setPosition(visibleSize.width * 0.265f, visibleSize.height * 0.48f);
+    playItem->setContentSize(Size(visibleSize.width * 0.315f, visibleSize.height * 0.19f));
     playItem->getNormalImage()->setContentSize(playItem->getContentSize());
     playItem->getSelectedImage()->setContentSize(playItem->getContentSize());
 
@@ -60,8 +60,8 @@ bool MainMenuScene::init()
         Sprite::createWithSpriteFrameName("closeButtonPressed"),
         CC_CALLBACK_1(MainMenuScene::menuCloseCallback, this));
 
-    closeItem->setPosition(visibleSize.width * 0.85f, visibleSize.height * 0.12f);
-    closeItem->setContentSize(Size(visibleSize.width * 0.1f, visibleSize.height * 0.1775f));
+    closeItem->setPosition(visibleSize.width * 0.935f, visibleSize.height * 0.12f);
+    closeItem->setContentSize(Size(visibleSize.width * 0.0675f, visibleSize.height * 0.12f));
     closeItem->getNormalImage()->setContentSize(closeItem->getContentSize());
     closeItem->getSelectedImage()->setContentSize(closeItem->getContentSize());
 
@@ -72,8 +72,8 @@ bool MainMenuScene::init()
         Sprite::createWithSpriteFrameName("soundButtonPressed"),
         NULL);
 
-    soundItem->setPosition(visibleSize.width * 0.125f, visibleSize.height * 0.22f);
-    soundItem->setContentSize(Size(visibleSize.width * 0.1f, visibleSize.height * 0.1775f));
+    soundItem->setPosition(visibleSize.width * 0.15f, visibleSize.height * 0.22f);
+    soundItem->setContentSize(Size(visibleSize.width * 0.085f, visibleSize.height * 0.15f));
     soundItem->getNormalImage()->setContentSize(soundItem->getContentSize());
     soundItem->getSelectedImage()->setContentSize(soundItem->getContentSize());
 
@@ -82,8 +82,8 @@ bool MainMenuScene::init()
         Sprite::createWithSpriteFrameName("rulesButtonPressed"),
         NULL);
 
-    rulesItem->setPosition(visibleSize.width * 0.295f, visibleSize.height * 0.22f);
-    rulesItem->setContentSize(Size(visibleSize.width * 0.1f, visibleSize.height * 0.1775f));
+    rulesItem->setPosition(visibleSize.width * 0.265f, visibleSize.height * 0.22f);
+    rulesItem->setContentSize(Size(visibleSize.width * 0.085f, visibleSize.height * 0.15f));
     rulesItem->getNormalImage()->setContentSize(rulesItem->getContentSize());
     rulesItem->getSelectedImage()->setContentSize(rulesItem->getContentSize());
 
@@ -92,8 +92,8 @@ bool MainMenuScene::init()
         Sprite::createWithSpriteFrameName("infoButtonPressed"),
         NULL);
 
-    infoItem->setPosition(visibleSize.width * 0.465f, visibleSize.height * 0.22f);
-    infoItem->setContentSize(Size(visibleSize.width * 0.1f, visibleSize.height * 0.1775f));
+    infoItem->setPosition(visibleSize.width * 0.38f, visibleSize.height * 0.22f);
+    infoItem->setContentSize(Size(visibleSize.width * 0.085f, visibleSize.height * 0.15f));
     infoItem->getNormalImage()->setContentSize(infoItem->getContentSize());
     infoItem->getSelectedImage()->setContentSize(infoItem->getContentSize());
 
