@@ -12,8 +12,9 @@ public:
 
     cocos2d::Label* gos_label;
     // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
     void createGamingScene(cocos2d::Ref* pSender);
+    void shareResults(cocos2d::Ref* pSender);
+    void showMainMenu(cocos2d::Ref* pSender);
     // implement the "static create()" method manually
     CREATE_FUNC(GameOverScene);
 };

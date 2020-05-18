@@ -1,6 +1,7 @@
 #include "AppDelegate.h"
 #include "MainMenuScene.h"
 #include "LevelCompleteScene.h"
+#include "GameOverScene.h"
 #ifdef SDKBOX_ENABLED
 #include "PluginIAP/PluginIAP.h"
 #endif
@@ -43,7 +44,7 @@ static cocos2d::Size largeResolutionSize = cocos2d::Size(2560, 1440);
 Size visibleSize;
 int currentLevel = 1;
 int score = 0;
-int lives = 3;
+int lives = 2;
 int levelDoneCount = 0;
 int itemCounter = 0;
 int badItemCounter = 0;
@@ -140,10 +141,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     spritecache->addSpriteFramesWithFile("hs_spritesheet.plist");
 
     visibleSize = Director::getInstance()->getVisibleSize();
-
-    UserDefault* def = UserDefault::getInstance();
-
-    highScore = def->getIntegerForKey("HIGHSCORE", 0);
+  
     // create a scene. it's an autorelease object
 
     auto MainMenuScene = MainMenuScene::createScene();

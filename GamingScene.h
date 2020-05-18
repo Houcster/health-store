@@ -23,10 +23,12 @@ public:
     void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
 
+    void createItems(float dt);
     void update(float dt);
 
 protected:
     std::unordered_map<int, Node*> _mouses;
+    std::set<Node*> nodesScheduledForRemoval;
 
     // implement the "static create()" method manually
     CREATE_FUNC(GamingScene);

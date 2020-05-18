@@ -10,6 +10,11 @@ extern int score;
 extern int highScore;
 extern int lives;
 extern int currentLevel;
+extern Size visibleSize;
+extern int levelDoneCount;
+extern int itemCounter;
+extern int badItemCounter;
+extern float itemSpeed;
 
 Scene* GameOverScene::createScene()
 {
@@ -33,26 +38,12 @@ bool GameOverScene::init()
         return false;
     }
 
-    LayerColor* _bgColor = LayerColor::create(Color4B(124, 130, 130, 255));
-    this->addChild(_bgColor, -10);
-
-    auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-    gos_label = Label::createWithTTF("Your score was: " + std::to_string(score) + " , Lives: " + std::to_string(lives), "fonts/Marker Felt.ttf", 44);
-    if (gos_label == nullptr)
-    {
-        problemLoading("'fonts/Marker Felt.ttf'");
-    }
-    else
-    {
-        // position the label on the center of the screen
-        gos_label->setPosition(Vec2(origin.x + visibleSize.width / 2,
-            origin.y + visibleSize.height / 1.4f));
-
-        // add the label as a child to this layer
-        this->addChild(gos_label, 1);
-    }
+    auto gameOverBGSprite = Sprite::createWithSpriteFrameName("gameOverBG");
+    gameOverBGSprite->setContentSize(Size(visibleSize.width, visibleSize.height));
+    gameOverBGSprite->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.5f);
+    addChild(gameOverBGSprite);
 
     if (score > highScore)
     {
@@ -62,15 +53,74 @@ bool GameOverScene::init()
         def->flush();
     }
 
-    auto menu_item_1 = MenuItemFont::create("Play again",
+    gos_label = Label::createWithTTF("Game Over!\nScore was: " + std::to_string(score), "fonts/arial.ttf", 44);
+    if (gos_label == nullptr)
+    {
+        problemLoading("'fonts/Marker Felt.ttf'");
+    }
+    else
+    {
+        // position the label on the center of the screen
+        gos_label->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.8f);
+        gos_label->setColor(Color3B::BLACK);
+        gos_label->setHorizontalAlignment(TextHAlignment::CENTER);
+        // add the label as a child to this layer
+        this->addChild(gos_label, 1);
+    }
+
+
+    auto restartItem = MenuItemSprite::create(
+        Sprite::createWithSpriteFrameName("keepGoNoAds"),
+        Sprite::createWithSpriteFrameName("keepGoNoAdsPressed"),
         CC_CALLBACK_1(GameOverScene::createGamingScene, this));
-    auto menu_item_2 = MenuItemFont::create("Exit",
-        CC_CALLBACK_1(GameOverScene::menuCloseCallback, this));
 
-    menu_item_1->setPosition(Size(480.0f, 250.0f));
-    menu_item_2->setPosition(Size(480.0f, 150.0f));
+    restartItem->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.56f);
+    restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
 
-    auto* menu = Menu::create(menu_item_1, menu_item_2, NULL);
+    if (lives == 1)
+    {
+        restartItem->setNormalImage(Sprite::createWithSpriteFrameName("keepGoNoAds"));
+        restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("keepGoNoAdsPressed"));
+        restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
+        restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
+        restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
+    }
+    else if (lives == 0)
+    {
+        restartItem->setNormalImage(Sprite::createWithSpriteFrameName("gmovrRestartButton"));
+        restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("gmovrRestartButtonPressed"));
+        restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
+        restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
+        restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
+    }
+
+
+
+
+    auto shareItem = MenuItemSprite::create(
+        Sprite::createWithSpriteFrameName("gmovrShareButton"),
+        Sprite::createWithSpriteFrameName("gmovrShareButtonPressed"),
+        CC_CALLBACK_1(GameOverScene::shareResults, this));
+
+    shareItem->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.38f);
+    shareItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
+    shareItem->getNormalImage()->setContentSize(shareItem->getContentSize());
+    shareItem->getSelectedImage()->setContentSize(shareItem->getContentSize());
+
+    auto mainMenuItem = MenuItemSprite::create(
+        Sprite::createWithSpriteFrameName("gmovrMenuButton"),
+        Sprite::createWithSpriteFrameName("gmovrMenuButtonPressed"),
+        CC_CALLBACK_1(GameOverScene::showMainMenu, this));
+
+    mainMenuItem->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.20f);
+    mainMenuItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
+    mainMenuItem->getNormalImage()->setContentSize(mainMenuItem->getContentSize());
+    mainMenuItem->getSelectedImage()->setContentSize(mainMenuItem->getContentSize());
+
+    auto* menu = Menu::create(restartItem, 
+                              shareItem, 
+                              mainMenuItem,
+                              NULL);
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
 
@@ -87,7 +137,7 @@ void GameOverScene::createGamingScene(Ref* pSender)
     }
     else
     {
-        lives = 3;
+        lives = 2;
         currentLevel = 1;
         score = 0;
         auto GamingScene = GamingScene::createScene();
@@ -95,12 +145,22 @@ void GameOverScene::createGamingScene(Ref* pSender)
     }
 }
 
-void GameOverScene::menuCloseCallback(Ref* pSender)
+void GameOverScene::shareResults(cocos2d::Ref* pSender)
 {
-    //Close the cocos2d-x game scene and quit the application
-    Director::getInstance()->end();
-    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() as given above,instead trigger a custom event created in RootViewController.mm as below*/
-    //EventCustom customEndEvent("game_scene_close_event");
-    //_eventDispatcher->dispatchEvent(&customEndEvent);
 
 }
+
+void GameOverScene::showMainMenu(cocos2d::Ref* pSender)
+{
+    currentLevel = 1;
+    score = 0;
+    lives = 2;
+    levelDoneCount = 0;
+    itemCounter = 0;
+    badItemCounter = 0;
+    itemSpeed = 0;
+    auto MainMenuScene = MainMenuScene::createScene();
+    Director::getInstance()->replaceScene(TransitionCrossFade::create(1, MainMenuScene));
+}
+
+

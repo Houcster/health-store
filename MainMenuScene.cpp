@@ -30,6 +30,10 @@ bool MainMenuScene::init()
         return false;
     }
 
+    UserDefault* def = UserDefault::getInstance();
+
+    highScore = def->getIntegerForKey("HIGHSCORE", 0);
+
     visibleSize = Director::getInstance()->getVisibleSize();
     //Vec2 origin = Director::getInstance()->getVisibleOrigin();
     auto glview = Director::getInstance()->getOpenGLView();

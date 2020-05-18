@@ -160,7 +160,8 @@ bool GamingScene::init()
     touchListener->onTouchCancelled = CC_CALLBACK_2(GamingScene::onTouchEnded, this);
     this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(touchListener, this);
 
-    schedule(CC_SCHEDULE_SELECTOR(GamingScene::update), 1.8f);
+    schedule(CC_SCHEDULE_SELECTOR(GamingScene::createItems), 1.8f);
+    this->scheduleUpdate();
 
     return true;
 }
@@ -170,6 +171,22 @@ bool GamingScene::init()
 ///////////////////////////////////////
 
 void GamingScene::update(float dt)
+{
+    std::set<Node*>::iterator it = nodesScheduledForRemoval.begin();
+    std::set<Node*>::iterator end = nodesScheduledForRemoval.end();
+    for (; it != end; ++it) {
+        Node* dyingNode = *it;
+
+        //delete ball... physics body is destroyed here
+        dyingNode->onExit();
+
+    }
+
+    //clear this list for next time
+    nodesScheduledForRemoval.clear();
+}
+
+void GamingScene::createItems(float dt)
 {
     if (currentLevel < 4)
     {
@@ -224,7 +241,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             //nodeA->removeFromParent();
             //this->removeChild(a->getNode()->getParent());
             a->setContactTestBitmask(false);
-            a->getNode()->getParent()->onExit();
+            nodesScheduledForRemoval.insert(nodeA);
             score++;
             gs_scoreLabel->setString(std::to_string(score));
         }
@@ -237,13 +254,12 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             //nodeB->removeFromParent();
             //this->removeChild(b->getNode()->getParent());
             b->setContactTestBitmask(false);
-            b->getNode()->getParent()->onExit();
+            nodesScheduledForRemoval.insert(nodeB);
             score++;
             gs_scoreLabel->setString(std::to_string(score));
         }
-
         //”словие, при котором удал€ютс€ овощи, если попали в корзину дл€ овощей
-        if (a->getCollisionBitmask() == 4 && b->getCollisionBitmask() == 2)
+        else if (a->getCollisionBitmask() == 4 && b->getCollisionBitmask() == 2)
         {
             //nodeA->removeAllComponents();
             //a->removeFromWorld();
@@ -252,7 +268,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             //nodeA->removeFromParent();
             //this->removeChild(a->getNode()->getParent());
             a->setContactTestBitmask(false);
-            a->getNode()->getParent()->onExit();
+            nodesScheduledForRemoval.insert(nodeA);
             score++;
             gs_scoreLabel->setString(std::to_string(score));
         }
@@ -265,13 +281,12 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             //nodeB->removeFromParent();
             //this->removeChild(b->getNode()->getParent());
             b->setContactTestBitmask(false);
-            b->getNode()->getParent()->onExit();
+            nodesScheduledForRemoval.insert(nodeB);
             score++;
             gs_scoreLabel->setString(std::to_string(score));
         }
-
         //”словие, при котором удал€етс€ мусор, если попал в мусорку
-        if (a->getCollisionBitmask() == 6 && b->getCollisionBitmask() == 7)
+        else if (a->getCollisionBitmask() == 6 && b->getCollisionBitmask() == 7)
         {
             //nodeA->removeAllComponents();
             //a->removeFromWorld();
@@ -280,7 +295,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             //nodeA->removeFromParent();
             //this->removeChild(a->getNode()->getParent());
             a->setContactTestBitmask(false);
-            a->getNode()->getParent()->onExit();
+            nodesScheduledForRemoval.insert(nodeA);
             score++;
             gs_scoreLabel->setString(std::to_string(score));
         }
@@ -293,19 +308,18 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             //nodeB->removeFromParent();
             //this->removeChild(b->getNode()->getParent());
             b->setContactTestBitmask(false);
-            b->getNode()->getParent()->onExit();
+            nodesScheduledForRemoval.insert(nodeB);
             score++;
             gs_scoreLabel->setString(std::to_string(score));
         }
-
         //”словие, при котором игра заканчиваетс€, если фрукт попал в корзину дл€ овощей
-        if (a->getCollisionBitmask() != 4 && b->getCollisionBitmask() == 2)
+        else if (a->getCollisionBitmask() != 4 && b->getCollisionBitmask() == 2)
         {
             //nodeA->removeComponent(a);
             //nodeA->removeFromParent();
             //this->removeChild(a->getNode()->getParent());
             a->setContactTestBitmask(false);
-            a->getNode()->getParent()->onExit();
+            nodesScheduledForRemoval.insert(nodeA);
             lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
@@ -316,20 +330,19 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             //nodeB->removeFromParent();
             //this->removeChild(b->getNode()->getParent());
             b->setContactTestBitmask(false);
-            b->getNode()->getParent()->onExit();
+            nodesScheduledForRemoval.insert(nodeB);
             lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
         }
-
         //”словие, при котором игра заканчиваетс€, если в мусорку попало что-то не то
-        if (a->getCollisionBitmask() != 6 && b->getCollisionBitmask() == 7)
+        else if (a->getCollisionBitmask() != 6 && b->getCollisionBitmask() == 7)
         {
             //nodeA->removeComponent(a);
             //nodeA->removeFromParent();
             //this->removeChild(a->getNode()->getParent());
             a->setContactTestBitmask(false);
-            a->getNode()->getParent()->onExit();
+            nodesScheduledForRemoval.insert(nodeA);
             lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
@@ -340,19 +353,18 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             //nodeB->removeFromParent();
             //this->removeChild(b->getNode()->getParent());
             b->setContactTestBitmask(false);
-            b->getNode()->getParent()->onExit();
+            nodesScheduledForRemoval.insert(nodeB);
             lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
         }
-
-        if (a->getCollisionBitmask() != 3 && b->getCollisionBitmask() == 1)
+        else if (a->getCollisionBitmask() != 3 && b->getCollisionBitmask() == 1)
         {
             //nodeA->removeComponent(a);
             //nodeA->removeFromParent();
             //this->removeChild(a->getNode()->getParent());
             a->setContactTestBitmask(false);
-            a->getNode()->getParent()->onExit();
+            nodesScheduledForRemoval.insert(nodeA);
             lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
@@ -363,19 +375,18 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             //nodeB->removeFromParent();
             //this->removeChild(b->getNode()->getParent());
             b->setContactTestBitmask(false);
-            b->getNode()->getParent()->onExit();
+            nodesScheduledForRemoval.insert(nodeB);
             lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
         }
-
-        if (a->getCollisionBitmask() == 5)
+        else if (a->getCollisionBitmask() == 5)
         {
             //nodeB->removeComponent(b);
             //nodeB->removeFromParent();
             //this->removeChild(b->getNode()->getParent());
             b->setContactTestBitmask(false);
-            b->getNode()->getParent()->onExit();
+            nodesScheduledForRemoval.insert(nodeB);
             lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
@@ -386,7 +397,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             //nodeA->removeFromParent();
             //this->removeChild(a->getNode()->getParent());
             a->setContactTestBitmask(false);
-            a->getNode()->getParent()->onExit();
+            nodesScheduledForRemoval.insert(nodeA);
             lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
@@ -459,7 +470,9 @@ void GamingScene::onTouchEnded(Touch* touch, Event* event)
     if (it != _mouses.end())
     {
         //this->removeChild(it->second);
-        it->second->onExit();
+        //it->second->onExit();
+        it->second->getPhysicsBody()->setDynamic(true);
+        nodesScheduledForRemoval.insert(it->second);
         _mouses.erase(it);
     }
 

@@ -39,9 +39,6 @@ bool LevelCompleteScene::init()
         return false;
     }
 
-    LayerColor* _bgColor = LayerColor::create(Color4B(157, 187, 227, 255));
-    this->addChild(_bgColor, -10);
-
     Vec2 origin = Director::getInstance()->getVisibleOrigin();\
 
     auto completeLevelBGSprite = Sprite::createWithSpriteFrameName("completeLevelBG");
@@ -84,7 +81,7 @@ bool LevelCompleteScene::init()
     auto mainMenuItem = MenuItemSprite::create(
         Sprite::createWithSpriteFrameName("cmplvlMenuButton"),
         Sprite::createWithSpriteFrameName("cmplvlMenuButtonPressed"),
-        CC_CALLBACK_1(LevelCompleteScene::createMainMenuScene, this));
+        CC_CALLBACK_1(LevelCompleteScene::showMainMenu, this));
 
     mainMenuItem->setPosition(visibleSize.width * 0.4f, visibleSize.height * 0.32f);
     mainMenuItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1585f));
@@ -113,15 +110,14 @@ void LevelCompleteScene::createGamingScene(Ref* pSender)
     Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GamingScene));
 }
 
-void LevelCompleteScene::createMainMenuScene(Ref* pSender)
+void LevelCompleteScene::showMainMenu(Ref* pSender)
 {
     currentLevel = 1;
     score = 0;
-    lives = 3;
+    lives = 2;
     levelDoneCount = 0;
     itemCounter = 0;
     badItemCounter = 0;
-    highScore = 0;
     itemSpeed = 0;
     auto MainMenuScene = MainMenuScene::createScene();
     Director::getInstance()->replaceScene(TransitionCrossFade::create(1, MainMenuScene));
