@@ -10,7 +10,7 @@ public:
 
     virtual bool init();
 
-    cocos2d::Label* gos_label;
+    cocos2d::Label* lcs_label;
     // a selector callback
     void showMainMenu(cocos2d::Ref* pSender);
     void createGamingScene(cocos2d::Ref* pSender);

@@ -13,8 +13,8 @@ extern float itemSpeed;
 
 Item* Item::createItem()
 {
-    std::string fruits[5] = { "orange", "pineapple", "banana", "lemon", "peach" };
-    std::string veggies[5] = { "beetroot", "tomat", "onion", "brokkoli", "carrot" };
+    std::string fruits[8] = { "watermelon", "orange", "pineapple", "pear", "apple",  "lemon", "peach", "banana" };
+    std::string veggies[8] = { "beetroot", "tomat", "eggplant", "onion", "cucumber", "brokkoli", "pepper", "carrot" };
     std::string name;
     int collisionBitmask;
 
@@ -29,7 +29,6 @@ Item* Item::createItem()
         name = veggies[cocos2d::RandomHelper::random_int(0, itemCounter)];
         collisionBitmask = 4;
     }
-
 
     auto item = new (std::nothrow) Item;
     if (item && item->init()) {
@@ -79,7 +78,7 @@ Item* Item::createItem()
 
 Item* Item::createBadItem()
 {
-    std::string badItems[1] = { "cigarettes" };
+    std::string badItems[4] = { "cigarettes", "beer", "wasteApple", "badbanana" };
     std::string name;
     int collisionBitmask;
 
@@ -93,7 +92,7 @@ Item* Item::createBadItem()
         item->sprite->setContentSize(Size(visibleSize.width * 0.105f, visibleSize.height * 0.185f));
         item->sprite->setPosition(visibleSize.width * 0.95f, visibleSize.height * 0.8);
         item->sprite->setGlobalZOrder(3);
-        //item->sprite->setOpacity(40);
+        //item->sprite->setOpacity(70);
 
         if (MyBodyParser::getInstance()->parseJsonFile("PhysicsBodies.json"))
         {

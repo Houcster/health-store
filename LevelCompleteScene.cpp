@@ -46,18 +46,18 @@ bool LevelCompleteScene::init()
     completeLevelBGSprite->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.5f);
     addChild(completeLevelBGSprite);
 
-    gos_label = Label::createWithTTF("You complete level: " + std::to_string(currentLevel), "fonts/arial.ttf", 44);
-    if (gos_label == nullptr)
+    lcs_label = Label::createWithTTF("You complete level: " + std::to_string(currentLevel), "fonts/arial.ttf", 44);
+    if (lcs_label == nullptr)
     {
         problemLoading("'fonts/Marker Felt.ttf'");
     }
     else
     {
         // position the label on the center of the screen
-        gos_label->setPosition(visibleSize.width * 0.4f, visibleSize.height * 0.75f);
-        gos_label->setColor(Color3B::BLACK);
+        lcs_label->setPosition(visibleSize.width * 0.4f, visibleSize.height * 0.75f);
+        lcs_label->setColor(Color3B::BLACK);
         // add the label as a child to this layer
-        this->addChild(gos_label, 1);
+        this->addChild(lcs_label, 1);
     }
 
     if (score > highScore)
@@ -102,12 +102,12 @@ void LevelCompleteScene::createGamingScene(Ref* pSender)
     //Метод создаёт игровую сцену(Gaming Scene), при этом текущая сцена(MainMenuScene) удаляется
 
     currentLevel++;
-    if (currentLevel > 4)
+    if (currentLevel > 11)
     {
-        levelDoneCount += 20;
+        levelDoneCount += 50;
     }
     auto GamingScene = GamingScene::createScene();
-    Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GamingScene));
+    Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GamingScene));
 }
 
 void LevelCompleteScene::showMainMenu(Ref* pSender)
@@ -120,6 +120,6 @@ void LevelCompleteScene::showMainMenu(Ref* pSender)
     badItemCounter = 0;
     itemSpeed = 0;
     auto MainMenuScene = MainMenuScene::createScene();
-    Director::getInstance()->replaceScene(TransitionCrossFade::create(1, MainMenuScene));
+    Director::getInstance()->replaceScene(TransitionSlideInR::create(1, MainMenuScene));
 
 }

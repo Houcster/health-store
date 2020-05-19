@@ -133,7 +133,7 @@ void GameOverScene::createGamingScene(Ref* pSender)
     if (lives != 0)
     {
         auto GamingScene = GamingScene::createScene();
-        Director::getInstance()->replaceScene(GamingScene);
+        Director::getInstance()->replaceScene(TransitionSlideInL::create(1, GamingScene));
     }
     else
     {
@@ -141,7 +141,7 @@ void GameOverScene::createGamingScene(Ref* pSender)
         currentLevel = 1;
         score = 0;
         auto GamingScene = GamingScene::createScene();
-        Director::getInstance()->replaceScene(GamingScene);
+        Director::getInstance()->replaceScene(TransitionSlideInL::create(1, GamingScene));
     }
 }
 
@@ -160,7 +160,7 @@ void GameOverScene::showMainMenu(cocos2d::Ref* pSender)
     badItemCounter = 0;
     itemSpeed = 0;
     auto MainMenuScene = MainMenuScene::createScene();
-    Director::getInstance()->replaceScene(TransitionCrossFade::create(1, MainMenuScene));
+    Director::getInstance()->replaceScene(TransitionSlideInL::create(1, MainMenuScene));
 }
 
 

@@ -52,7 +52,7 @@ bool MainMenuScene::init()
     auto playItem = MenuItemSprite::create(
         Sprite::createWithSpriteFrameName("playButton"),
         Sprite::createWithSpriteFrameName("playButtonPressed"),
-        CC_CALLBACK_1(MainMenuScene::menuPlayCallback, this));
+        CC_CALLBACK_1(MainMenuScene::createGamingScene, this));
 
     playItem->setPosition(visibleSize.width * 0.265f, visibleSize.height * 0.48f);
     playItem->setContentSize(Size(visibleSize.width * 0.315f, visibleSize.height * 0.19f));
@@ -115,18 +115,9 @@ bool MainMenuScene::init()
 
 void MainMenuScene::createGamingScene(Ref* pSender)
 {
-    //Метод создаёт игровую сцену(Gaming Scene), при этом текущая сцена(MainMenuScene) удаляется
-    auto GamingScene = GamingScene::createScene();
-    Director::getInstance()->pushScene(GamingScene);
-    //auto SubLevelScene = LevelCompleteScene::createScene();
-    //Director::getInstance()->pushScene(SubLevelScene);
-}
-
-void MainMenuScene::menuPlayCallback(Ref* pSender)
-{
     //Close the cocos2d-x game scene and quit the application
     auto GamingScene = GamingScene::createScene();
-    Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GamingScene));
+    Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GamingScene));
 
     /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() as given above,instead trigger a custom event created in RootViewController.mm as below*/
 

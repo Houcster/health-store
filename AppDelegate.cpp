@@ -2,6 +2,8 @@
 #include "MainMenuScene.h"
 #include "LevelCompleteScene.h"
 #include "GameOverScene.h"
+#include "LogoSplashScene.h"
+
 #ifdef SDKBOX_ENABLED
 #include "PluginIAP/PluginIAP.h"
 #endif
@@ -145,8 +147,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // create a scene. it's an autorelease object
 
     auto MainMenuScene = MainMenuScene::createScene();
+    auto LogoSplashScene = LogoSplashScene::createScene();
     // run
-    director->runWithScene(MainMenuScene);
+    director->runWithScene(LogoSplashScene);
 
     return true;
 }

@@ -56,6 +56,7 @@ list(APPEND GAME_SOURCE
      Classes/Baskets.cpp
      Classes/GameOverScene.cpp
      Classes/LevelCompleteScene.cpp
+	 Classes/LogoSplashScene.cpp
      )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
@@ -66,6 +67,7 @@ list(APPEND GAME_HEADER
      Classes/Baskets.h
      Classes/GameOverScene.h
      Classes/LevelCompleteScene.h
+	 Classes/LogoSplashScene.h
      )
 
 if(ANDROID)

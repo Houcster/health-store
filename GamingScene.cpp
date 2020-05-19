@@ -15,6 +15,7 @@ extern int lives;
 extern int currentLevel;
 extern int levelDoneCount;
 extern int itemCounter;
+extern int badItemCounter;
 extern float itemSpeed;
 
 Scene* GamingScene::createScene()
@@ -103,6 +104,7 @@ bool GamingScene::init()
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
 
+    //////////////////////////////////////////
     auto borderBody = PhysicsBody::createEdgeBox(visibleSize, PHYSICSBODY_MATERIAL_DEFAULT, 3);
 
     auto borderNode = Node::create();
@@ -110,6 +112,7 @@ bool GamingScene::init()
     borderNode->setPhysicsBody(borderBody);
     addChild(borderNode);
 
+    ////////////////////////////////////////////////////////////////////////////
     auto groundBody = PhysicsBody::createBox(Size(visibleSize.width, visibleSize.height * 0.03f), PHYSICSBODY_MATERIAL_DEFAULT);
     groundBody->setCollisionBitmask(5);
     groundBody->setContactTestBitmask(true);
@@ -120,22 +123,33 @@ bool GamingScene::init()
     groundNode->setPhysicsBody(groundBody);
     addChild(groundNode);
 
-
+    ////////////////////////////////////////////////////////////////////////////
     auto barrierBody = PhysicsBody::createBox(Size(visibleSize.width * 0.07f, visibleSize.height * 0.52f), PHYSICSBODY_MATERIAL_DEFAULT);
     barrierBody->setCollisionBitmask(5);
     barrierBody->setContactTestBitmask(true);
     barrierBody->setDynamic(false);
 
-    //auto bgSprite = Sprite::createWithSpriteFrameName("mainMenuBG");
-    //bgSprite->setContentSize(Size(visibleSize.width, visibleSize.height));
-    //bgSprite->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.5f);
-    //addChild(bgSprite);
-
     auto barrierNode = Node::create();
-    barrierNode->setPosition(visibleSize.width * 0.0075f, visibleSize.height * 0.925f);
+    barrierNode->setPosition(visibleSize.width * 0.0125f, visibleSize.height * 0.945f);
     barrierNode->addComponent(barrierBody);
     addChild(barrierNode);
 
+    ////////////////////////////////////////////////////////////////////////////
+    auto bgPatchBody = PhysicsBody::createBox(Size(visibleSize.width * 0.085f, visibleSize.height * 0.0155f), PHYSICSBODY_MATERIAL_DEFAULT);
+    bgPatchBody->setDynamic(false);
+
+    auto bgPatchNode = Node::create();
+    bgPatchNode->setPosition(visibleSize.width * 0.9575f, visibleSize.height * 0.6805f);
+    bgPatchNode->addComponent(bgPatchBody);
+    addChild(bgPatchNode);
+
+    auto bgPatchSprite = Sprite::createWithSpriteFrameName("gamingScenePatch");
+    bgPatchSprite->setContentSize(Size(visibleSize.width * 0.085f, visibleSize.height * 0.245f));
+    bgPatchSprite->setPosition(visibleSize.width * 0.9575f, visibleSize.height * 0.8055f);
+    bgPatchSprite->setGlobalZOrder(20);
+    addChild(bgPatchSprite);
+
+    ////////////////////////////////////////////////////////////////////////////
     if (currentLevel < 4)
     {
         auto fruitbasket = Basket::createBasket(this, 1);
@@ -148,11 +162,12 @@ bool GamingScene::init()
         auto recycle = Basket::createBasket(this, 5);
     }
 
-
+    ////////////////////////////////////////////////////////////////////////////
     auto bodiesContactListener = EventListenerPhysicsContact::create();
     bodiesContactListener->onContactBegin = CC_CALLBACK_1(GamingScene::onContactBegin, this);
     this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(bodiesContactListener, this);
 
+    ////////////////////////////////////////////////////////////////////////////
     auto touchListener = EventListenerTouchOneByOne::create();
     touchListener->onTouchBegan = CC_CALLBACK_2(GamingScene::onTouchBegan, this);
     touchListener->onTouchMoved = CC_CALLBACK_2(GamingScene::onTouchMoved, this);
@@ -322,7 +337,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             nodesScheduledForRemoval.insert(nodeA);
             lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
-            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
+            Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
         else if (a->getCollisionBitmask() == 2 && b->getCollisionBitmask() != 4)
         {
@@ -333,7 +348,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             nodesScheduledForRemoval.insert(nodeB);
             lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
-            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
+            Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
         //Условие, при котором игра заканчивается, если в мусорку попало что-то не то
         else if (a->getCollisionBitmask() != 6 && b->getCollisionBitmask() == 7)
@@ -345,7 +360,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             nodesScheduledForRemoval.insert(nodeA);
             lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
-            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
+            Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
         else if (a->getCollisionBitmask() == 7 && b->getCollisionBitmask() != 6)
         {
@@ -356,7 +371,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             nodesScheduledForRemoval.insert(nodeB);
             lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
-            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
+            Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
         else if (a->getCollisionBitmask() != 3 && b->getCollisionBitmask() == 1)
         {
@@ -367,7 +382,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             nodesScheduledForRemoval.insert(nodeA);
             lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
-            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
+            Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
         else if (a->getCollisionBitmask() == 1 && b->getCollisionBitmask() != 3)
         {
@@ -378,7 +393,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             nodesScheduledForRemoval.insert(nodeB);
             lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
-            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
+            Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
         else if (a->getCollisionBitmask() == 5)
         {
@@ -389,7 +404,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             nodesScheduledForRemoval.insert(nodeB);
             lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
-            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
+            Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
         else if (b->getCollisionBitmask() == 5)
         {
@@ -400,14 +415,14 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             nodesScheduledForRemoval.insert(nodeA);
             lives -= 1;
             auto GameOverScene = GameOverScene::createScene();
-            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, GameOverScene));
+            Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
 
 
         if (score == levelDoneCount)
         {
             auto LevelCompleteScene = LevelCompleteScene::createScene();
-            Director::getInstance()->replaceScene(TransitionCrossFade::create(1, LevelCompleteScene));
+            Director::getInstance()->replaceScene(TransitionSlideInR::create(1, LevelCompleteScene));
         }
 
     }
@@ -498,7 +513,7 @@ void GamingScene::setRules()
 {
     switch (currentLevel) {
     case 1:
-        levelDoneCount = 10;
+        levelDoneCount = 15;
         itemCounter = 1;
         itemSpeed = visibleSize.width * -0.15f;
         break;
@@ -513,15 +528,51 @@ void GamingScene::setRules()
         itemSpeed = visibleSize.width * -0.15f;
         break;
     case 4:
-        levelDoneCount = 55;
+        levelDoneCount = 60;
         itemCounter = 3;
         itemSpeed = visibleSize.width * -0.15f;
         break;
     case 5:
-        levelDoneCount = 70;
+        levelDoneCount = 85;
         itemCounter = 4;
         itemSpeed = visibleSize.width * -0.15f;
         break;
+    case 6:
+        levelDoneCount = 115;
+        itemCounter = 5;
+        itemSpeed = visibleSize.width * -0.15f;
+        break;
+    case 7:
+        levelDoneCount = 150;
+        itemCounter = 5;
+        badItemCounter = 1;
+        itemSpeed = visibleSize.width * -0.15f;
+        break;
+    case 8:
+        levelDoneCount = 190;
+        itemCounter = 6;
+        badItemCounter = 1;
+        itemSpeed = visibleSize.width * -0.15f;
+        break;
+    case 9:
+        levelDoneCount = 235;
+        itemCounter = 6;
+        badItemCounter = 2;
+        itemSpeed = visibleSize.width * -0.15f;
+        break;
+    case 10:
+        levelDoneCount = 285;
+        itemCounter = 7;
+        badItemCounter = 2;
+        itemSpeed = visibleSize.width * -0.15f;
+        break;
+    case 11:
+        levelDoneCount = 350;
+        itemCounter = 7;
+        badItemCounter = 3;
+        itemSpeed = visibleSize.width * -0.15f;
+        break;
     }
+
 
 }
