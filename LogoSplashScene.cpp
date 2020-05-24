@@ -1,6 +1,8 @@
 #include "MainMenuScene.h"
 #include "LogoSplashScene.h"
 #include "AppDelegate.h"
+#include "AudioEngine.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
@@ -53,9 +55,18 @@ bool LogoSplashScene::init()
         logoSprite->setOpacity(0);
         addChild(logoSprite);
 
-        auto fadeIn = FadeIn::create(3.0f);
+        auto fadeIn = FadeIn::create(2.5f);
         logoSprite->runAction(fadeIn);
-        scheduleOnce(CC_SCHEDULE_SELECTOR(LogoSplashScene::showMainMenu), 3.0f);
+
+        experimental::AudioEngine::preload("audio/main_theme.mp3");
+        experimental::AudioEngine::preload("audio/mainMusic_1.mp3");
+        experimental::AudioEngine::preload("audio/buttonSound.mp3");
+        experimental::AudioEngine::preload("audio/basketSound.mp3");
+        experimental::AudioEngine::preload("audio/loseSound.mp3");
+        experimental::AudioEngine::preload("audio/winSound.mp3");
+        experimental::AudioEngine::preload("audio/trashSound.mp3");
+
+        scheduleOnce(CC_SCHEDULE_SELECTOR(LogoSplashScene::showMainMenu), 2.5f);
     }
     else
     {

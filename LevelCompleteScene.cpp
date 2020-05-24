@@ -3,6 +3,7 @@
 #include "AppDelegate.h"
 #include "SimpleAudioEngine.h"
 #include "LevelCompleteScene.h"
+#include "AudioEngine.h"
 
 USING_NS_CC;
 
@@ -100,6 +101,7 @@ bool LevelCompleteScene::init()
 void LevelCompleteScene::createGamingScene(Ref* pSender)
 {
     //Метод создаёт игровую сцену(Gaming Scene), при этом текущая сцена(MainMenuScene) удаляется
+    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
 
     currentLevel++;
     if (currentLevel > 11)
@@ -112,6 +114,8 @@ void LevelCompleteScene::createGamingScene(Ref* pSender)
 
 void LevelCompleteScene::showMainMenu(Ref* pSender)
 {
+    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+
     currentLevel = 1;
     score = 0;
     lives = 2;

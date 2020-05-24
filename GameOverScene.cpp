@@ -2,7 +2,7 @@
 #include "GameOverScene.h"
 #include "GamingScene.h"
 #include "AppDelegate.h"
-#include "SimpleAudioEngine.h"
+#include "AudioEngine.h"
 
 USING_NS_CC;
 
@@ -130,6 +130,8 @@ bool GameOverScene::init()
 void GameOverScene::createGamingScene(Ref* pSender)
 {
     //Метод создаёт игровую сцену(Gaming Scene), при этом текущая сцена(MainMenuScene) удаляется
+    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+
     if (lives != 0)
     {
         auto GamingScene = GamingScene::createScene();
@@ -147,11 +149,13 @@ void GameOverScene::createGamingScene(Ref* pSender)
 
 void GameOverScene::shareResults(cocos2d::Ref* pSender)
 {
-
+    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
 }
 
 void GameOverScene::showMainMenu(cocos2d::Ref* pSender)
 {
+    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+
     currentLevel = 1;
     score = 0;
     lives = 2;

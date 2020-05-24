@@ -51,6 +51,7 @@ int levelDoneCount = 0;
 int itemCounter = 0;
 int badItemCounter = 0;
 int highScore = 0;
+int inGameMusic = -1;
 float itemSpeed = 0;
 
 AppDelegate::AppDelegate()
@@ -146,7 +147,6 @@ bool AppDelegate::applicationDidFinishLaunching() {
   
     // create a scene. it's an autorelease object
 
-    auto MainMenuScene = MainMenuScene::createScene();
     auto LogoSplashScene = LogoSplashScene::createScene();
     // run
     director->runWithScene(LogoSplashScene);

@@ -3,8 +3,8 @@
 #include "Baskets.h"
 #include "GameOverScene.h"
 #include "MainMenuScene.h"
-#include "SimpleAudioEngine.h"
 #include "LevelCompleteScene.h"
+#include "AudioEngine.h"
 
 USING_NS_CC;
 
@@ -17,6 +17,8 @@ extern int levelDoneCount;
 extern int itemCounter;
 extern int badItemCounter;
 extern float itemSpeed;
+
+extern int inGameMusic;
 
 Scene* GamingScene::createScene()
 {
@@ -175,9 +177,15 @@ bool GamingScene::init()
     touchListener->onTouchCancelled = CC_CALLBACK_2(GamingScene::onTouchEnded, this);
     this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(touchListener, this);
 
+    
     schedule(CC_SCHEDULE_SELECTOR(GamingScene::createItems), 1.8f);
     this->scheduleUpdate();
 
+    if (experimental::AudioEngine::getState(inGameMusic) != experimental::AudioEngine::AudioState::PLAYING)
+    {
+        inGameMusic = experimental::AudioEngine::play2d("audio/mainMusic_1.mp3", false, 0.15f);
+    }
+    
     return true;
 }
 
@@ -259,6 +267,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             nodesScheduledForRemoval.insert(nodeA);
             score++;
             gs_scoreLabel->setString(std::to_string(score));
+            playSound(3);
         }
         else if (a->getCollisionBitmask() == 1 && b->getCollisionBitmask() == 3)
         {
@@ -272,6 +281,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             nodesScheduledForRemoval.insert(nodeB);
             score++;
             gs_scoreLabel->setString(std::to_string(score));
+            playSound(3);
         }
         //”словие, при котором удал€ютс€ овощи, если попали в корзину дл€ овощей
         else if (a->getCollisionBitmask() == 4 && b->getCollisionBitmask() == 2)
@@ -286,6 +296,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             nodesScheduledForRemoval.insert(nodeA);
             score++;
             gs_scoreLabel->setString(std::to_string(score));
+            playSound(3);
         }
         else if (a->getCollisionBitmask() == 2 && b->getCollisionBitmask() == 4)
         {
@@ -299,6 +310,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             nodesScheduledForRemoval.insert(nodeB);
             score++;
             gs_scoreLabel->setString(std::to_string(score));
+            playSound(3);
         }
         //”словие, при котором удал€етс€ мусор, если попал в мусорку
         else if (a->getCollisionBitmask() == 6 && b->getCollisionBitmask() == 7)
@@ -313,6 +325,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             nodesScheduledForRemoval.insert(nodeA);
             score++;
             gs_scoreLabel->setString(std::to_string(score));
+            playSound(4);
         }
         else if (a->getCollisionBitmask() == 7 && b->getCollisionBitmask() == 6)
         {
@@ -326,6 +339,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             nodesScheduledForRemoval.insert(nodeB);
             score++;
             gs_scoreLabel->setString(std::to_string(score));
+            playSound(4);
         }
         //”словие, при котором игра заканчиваетс€, если фрукт попал в корзину дл€ овощей
         else if (a->getCollisionBitmask() != 4 && b->getCollisionBitmask() == 2)
@@ -336,6 +350,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             a->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeA);
             lives -= 1;
+            playSound(2);
             auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
@@ -347,6 +362,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             b->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeB);
             lives -= 1;
+            playSound(2);
             auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
@@ -359,6 +375,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             a->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeA);
             lives -= 1;
+            playSound(2);
             auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
@@ -370,6 +387,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             b->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeB);
             lives -= 1;
+            playSound(2);
             auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
@@ -381,6 +399,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             a->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeA);
             lives -= 1;
+            playSound(2);
             auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
@@ -392,6 +411,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             b->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeB);
             lives -= 1;
+            playSound(2);
             auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
@@ -403,6 +423,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             b->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeB);
             lives -= 1;
+            playSound(2);
             auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
@@ -414,6 +435,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             a->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeA);
             lives -= 1;
+            playSound(2);
             auto GameOverScene = GameOverScene::createScene();
             Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
@@ -421,6 +443,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
 
         if (score == levelDoneCount)
         {
+            playSound(1);
             auto LevelCompleteScene = LevelCompleteScene::createScene();
             Director::getInstance()->replaceScene(TransitionSlideInR::create(1, LevelCompleteScene));
         }
@@ -513,7 +536,7 @@ void GamingScene::setRules()
 {
     switch (currentLevel) {
     case 1:
-        levelDoneCount = 15;
+        levelDoneCount = 10;
         itemCounter = 1;
         itemSpeed = visibleSize.width * -0.15f;
         break;
@@ -573,6 +596,25 @@ void GamingScene::setRules()
         itemSpeed = visibleSize.width * -0.15f;
         break;
     }
-
-
 }
+
+void GamingScene::playSound(int soundKey)
+{
+    switch (soundKey) {
+    case 1:
+        experimental::AudioEngine::play2d("audio/winSound.mp3");
+        break;
+    case 2:
+        experimental::AudioEngine::stop(inGameMusic);
+        experimental::AudioEngine::play2d("audio/loseSound.mp3");
+        break;
+    case 3:
+        experimental::AudioEngine::play2d("audio/basketSound.mp3");
+        break;
+    case 4:
+        experimental::AudioEngine::play2d("audio/trashSound.mp3");
+        break;
+    }
+}
+
+

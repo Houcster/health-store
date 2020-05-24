@@ -1,12 +1,15 @@
 #include "AppDelegate.h"
-#include "SimpleAudioEngine.h"
 #include "MainMenuScene.h"
 #include "GamingScene.h"
 #include "LevelCompleteScene.h"
+#include "AudioEngine.h"
 
 USING_NS_CC;
 extern Size visibleSize;
 extern int highScore;
+extern int inGameMusic;
+
+static int bgMusic = -1;
 
 Scene* MainMenuScene::createScene()
 {
@@ -37,7 +40,9 @@ bool MainMenuScene::init()
     visibleSize = Director::getInstance()->getVisibleSize();
     //Vec2 origin = Director::getInstance()->getVisibleOrigin();
     auto glview = Director::getInstance()->getOpenGLView();
-    auto screenSize = glview->getFrameSize();
+
+    //CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/main_theme.mp3");
+    //CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("audio/main_theme.mp3", true);
 
     auto mainMenuBGSprite = Sprite::createWithSpriteFrameName("mainMenuBG");
     mainMenuBGSprite->setContentSize(Size(visibleSize.width, visibleSize.height));
@@ -71,20 +76,20 @@ bool MainMenuScene::init()
 
     //closeItem->setScale(screenSize.width * 0.000225f);
 
-    auto soundItem = MenuItemSprite::create(
-        Sprite::createWithSpriteFrameName("soundButton"),
-        Sprite::createWithSpriteFrameName("soundButtonPressed"),
-        NULL);
+    auto settingsItem = MenuItemSprite::create(
+        Sprite::createWithSpriteFrameName("settingsButton"),
+        Sprite::createWithSpriteFrameName("settingsButtonPressed"),
+        CC_CALLBACK_1(MainMenuScene::showSettingsScene, this));
 
-    soundItem->setPosition(visibleSize.width * 0.15f, visibleSize.height * 0.22f);
-    soundItem->setContentSize(Size(visibleSize.width * 0.085f, visibleSize.height * 0.15f));
-    soundItem->getNormalImage()->setContentSize(soundItem->getContentSize());
-    soundItem->getSelectedImage()->setContentSize(soundItem->getContentSize());
+    settingsItem->setPosition(visibleSize.width * 0.15f, visibleSize.height * 0.22f);
+    settingsItem->setContentSize(Size(visibleSize.width * 0.085f, visibleSize.height * 0.15f));
+    settingsItem->getNormalImage()->setContentSize(settingsItem->getContentSize());
+    settingsItem->getSelectedImage()->setContentSize(settingsItem->getContentSize());
 
     auto rulesItem = MenuItemSprite::create(
         Sprite::createWithSpriteFrameName("rulesButton"),
         Sprite::createWithSpriteFrameName("rulesButtonPressed"),
-        NULL);
+        CC_CALLBACK_1(MainMenuScene::showRulesScene, this));
 
     rulesItem->setPosition(visibleSize.width * 0.265f, visibleSize.height * 0.22f);
     rulesItem->setContentSize(Size(visibleSize.width * 0.085f, visibleSize.height * 0.15f));
@@ -94,7 +99,7 @@ bool MainMenuScene::init()
     auto infoItem = MenuItemSprite::create(
         Sprite::createWithSpriteFrameName("infoButton"),
         Sprite::createWithSpriteFrameName("infoButtonPressed"),
-        NULL);
+        CC_CALLBACK_1(MainMenuScene::showInfoScene, this));
 
     infoItem->setPosition(visibleSize.width * 0.38f, visibleSize.height * 0.22f);
     infoItem->setContentSize(Size(visibleSize.width * 0.085f, visibleSize.height * 0.15f));
@@ -103,19 +108,41 @@ bool MainMenuScene::init()
 
     auto* menu = Menu::create(playItem,
         closeItem,
-        soundItem,
+        settingsItem,
         rulesItem,
         infoItem,
         NULL);
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
 
+    experimental::AudioEngine::stop(inGameMusic);
+    bgMusic = experimental::AudioEngine::play2d("audio/main_theme.mp3", true, 0.5f);
+
     return true;
+}
+
+void MainMenuScene::showSettingsScene(cocos2d::Ref* pSender)
+{
+    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+}
+
+void MainMenuScene::showRulesScene(cocos2d::Ref* pSender)
+{
+    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+}
+
+void MainMenuScene::showInfoScene(cocos2d::Ref* pSender)
+{
+    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
 }
 
 void MainMenuScene::createGamingScene(Ref* pSender)
 {
     //Close the cocos2d-x game scene and quit the application
+    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    experimental::AudioEngine::stop(bgMusic);
+    //experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+
     auto GamingScene = GamingScene::createScene();
     Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GamingScene));
 
@@ -127,7 +154,9 @@ void MainMenuScene::createGamingScene(Ref* pSender)
 }
 
 void MainMenuScene::menuCloseCallback(Ref* pSender)
-{
+{   
+    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+
     //Close the cocos2d-x game scene and quit the application
     Director::getInstance()->end();
 
