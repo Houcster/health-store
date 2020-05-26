@@ -57,6 +57,9 @@ list(APPEND GAME_SOURCE
      Classes/GameOverScene.cpp
      Classes/LevelCompleteScene.cpp
 	 Classes/LogoSplashScene.cpp
+	 Classes/SettingsScene.cpp
+	 Classes/RulesScene.cpp
+	 Classes/InfoScene.cpp
      )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
@@ -68,6 +71,9 @@ list(APPEND GAME_HEADER
      Classes/GameOverScene.h
      Classes/LevelCompleteScene.h
 	 Classes/LogoSplashScene.h
+	 Classes/SettingsScene.h
+	 Classes/RulesScene.h
+	 Classes/InfoScene.h
      )
 
 if(ANDROID)

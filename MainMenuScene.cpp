@@ -3,11 +3,17 @@
 #include "GamingScene.h"
 #include "LevelCompleteScene.h"
 #include "AudioEngine.h"
+#include "SettingsScene.h"
+#include "RulesScene.h"
+#include "InfoScene.h"
 
 USING_NS_CC;
 extern Size visibleSize;
 extern int highScore;
 extern int inGameMusic;
+extern int mainTheme;
+extern bool isSoundsEnable;
+extern bool isMusicEnable;
 
 static int bgMusic = -1;
 
@@ -116,31 +122,56 @@ bool MainMenuScene::init()
     this->addChild(menu);
 
     experimental::AudioEngine::stop(inGameMusic);
-    bgMusic = experimental::AudioEngine::play2d("audio/main_theme.mp3", true, 0.5f);
+
+    if (experimental::AudioEngine::getState(mainTheme) != experimental::AudioEngine::AudioState::PLAYING && isMusicEnable)
+    {
+        mainTheme = experimental::AudioEngine::play2d("audio/main_theme.mp3", false, 0.15f);
+    }
 
     return true;
 }
 
 void MainMenuScene::showSettingsScene(cocos2d::Ref* pSender)
 {
-    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    if (isSoundsEnable)
+    {
+        experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    }
+    
+    auto SettingsScene = SettingsScene::createScene();
+    Director::getInstance()->replaceScene(TransitionSlideInR::create(1, SettingsScene));
 }
 
 void MainMenuScene::showRulesScene(cocos2d::Ref* pSender)
 {
-    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    if (isSoundsEnable)
+    {
+        experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    }
+
+    auto RulesScene = RulesScene::createScene();
+    Director::getInstance()->replaceScene(TransitionSlideInR::create(1, RulesScene));
 }
 
 void MainMenuScene::showInfoScene(cocos2d::Ref* pSender)
 {
-    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    if (isSoundsEnable)
+    {
+        experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    }
+
+    auto InfoScene = InfoScene::createScene();
+    Director::getInstance()->replaceScene(TransitionSlideInR::create(1, InfoScene));
 }
 
 void MainMenuScene::createGamingScene(Ref* pSender)
 {
     //Close the cocos2d-x game scene and quit the application
-    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
-    experimental::AudioEngine::stop(bgMusic);
+    if (isSoundsEnable)
+    {
+        experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    }
+    experimental::AudioEngine::stop(mainTheme);
     //experimental::AudioEngine::play2d("audio/buttonSound.mp3");
 
     auto GamingScene = GamingScene::createScene();
@@ -155,7 +186,10 @@ void MainMenuScene::createGamingScene(Ref* pSender)
 
 void MainMenuScene::menuCloseCallback(Ref* pSender)
 {   
-    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    if (isSoundsEnable)
+    {
+        experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    }
 
     //Close the cocos2d-x game scene and quit the application
     Director::getInstance()->end();

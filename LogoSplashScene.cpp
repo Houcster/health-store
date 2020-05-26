@@ -46,7 +46,12 @@ bool LogoSplashScene::init()
     layerGradient->setPosition(origin);
     addChild(layerGradient);
 
-    if (SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hs_spritesheet.plist"))
+    //if (SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hs_spritesheet.plist"))
+    if (   SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hdr/hs_spritesheet_1.plist")
+        && SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hdr/hs_spritesheet_2.plist")
+        && SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hdr/hs_spritesheet_3.plist")
+        && SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hdr/hs_spritesheet_4.plist")
+        && SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hdr/hs_spritesheet_5.plist"))
     {
         CCLOG("GG");
         auto logoSprite = Sprite::createWithSpriteFrameName("logo");

@@ -16,6 +16,8 @@ extern int itemCounter;
 extern float itemSpeed;
 extern int lives;
 extern int badItemCounter;
+extern bool isSoundsEnable;
+extern bool isMusicEnable;
 
 
 Scene* LevelCompleteScene::createScene()
@@ -101,7 +103,10 @@ bool LevelCompleteScene::init()
 void LevelCompleteScene::createGamingScene(Ref* pSender)
 {
     //Метод создаёт игровую сцену(Gaming Scene), при этом текущая сцена(MainMenuScene) удаляется
-    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    if (isSoundsEnable)
+    {
+        experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    }
 
     currentLevel++;
     if (currentLevel > 11)
@@ -114,7 +119,10 @@ void LevelCompleteScene::createGamingScene(Ref* pSender)
 
 void LevelCompleteScene::showMainMenu(Ref* pSender)
 {
-    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    if (isSoundsEnable)
+    {
+        experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    }
 
     currentLevel = 1;
     score = 0;

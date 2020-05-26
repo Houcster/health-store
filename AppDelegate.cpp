@@ -51,7 +51,10 @@ int levelDoneCount = 0;
 int itemCounter = 0;
 int badItemCounter = 0;
 int highScore = 0;
-int inGameMusic = -1;
+int mainTheme;
+int inGameMusic = -2;
+bool isSoundsEnable = true;
+bool isMusicEnable = true;
 float itemSpeed = 0;
 
 AppDelegate::AppDelegate()
@@ -139,9 +142,19 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     register_all_packages();
 
+    UserDefault* def = UserDefault::getInstance();
+
+    isSoundsEnable = def->getBoolForKey("IS_SOUNDS_ENABLE", true);
+    isMusicEnable = def->getBoolForKey("IS_MUSIC_ENABLE", true);
+
     //Грузим Sprite Sheet
     auto spritecache = SpriteFrameCache::getInstance();
-    spritecache->addSpriteFramesWithFile("hs_spritesheet.plist");
+    //spritecache->addSpriteFramesWithFile("hs_spritesheet.plist");
+    spritecache->addSpriteFramesWithFile("hdr/hs_spritesheet_1.plist");
+    spritecache->addSpriteFramesWithFile("hdr/hs_spritesheet_2.plist");
+    spritecache->addSpriteFramesWithFile("hdr/hs_spritesheet_3.plist");
+    spritecache->addSpriteFramesWithFile("hdr/hs_spritesheet_4.plist");
+    spritecache->addSpriteFramesWithFile("hdr/hs_spritesheet_5.plist");
 
     visibleSize = Director::getInstance()->getVisibleSize();
   

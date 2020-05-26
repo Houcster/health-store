@@ -4,6 +4,11 @@
 #include "AppDelegate.h"
 #include "AudioEngine.h"
 
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+// include JniHelper.h
+#include "platform\android\jni\JniHelper.h"
+#endif
+
 USING_NS_CC;
 
 extern int score;
@@ -15,6 +20,8 @@ extern int levelDoneCount;
 extern int itemCounter;
 extern int badItemCounter;
 extern float itemSpeed;
+extern bool isSoundsEnable;
+extern bool isMusicEnable;
 
 Scene* GameOverScene::createScene()
 {
@@ -53,7 +60,7 @@ bool GameOverScene::init()
         def->flush();
     }
 
-    gos_label = Label::createWithTTF("Game Over!\nScore was: " + std::to_string(score), "fonts/arial.ttf", 44);
+    gos_label = Label::createWithTTF("Game Over!\nScore: " + std::to_string(score), "fonts/arial.ttf", 44);
     if (gos_label == nullptr)
     {
         problemLoading("'fonts/Marker Felt.ttf'");
@@ -129,8 +136,10 @@ bool GameOverScene::init()
 
 void GameOverScene::createGamingScene(Ref* pSender)
 {
-    //Метод создаёт игровую сцену(Gaming Scene), при этом текущая сцена(MainMenuScene) удаляется
-    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    if (isSoundsEnable)
+    {
+        experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    }
 
     if (lives != 0)
     {
@@ -149,12 +158,29 @@ void GameOverScene::createGamingScene(Ref* pSender)
 
 void GameOverScene::shareResults(cocos2d::Ref* pSender)
 {
-    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    if (isSoundsEnable)
+    {
+        experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    }
+
+    #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+
+    JniMethodInfo socialShare;
+
+    if (JniHelper::getStaticMethodInfo(socialShare, "org/cocos2dx/cpp/AppActivity", "socialShare", "(I)V"))
+    {
+        socialShare.env->CallStaticVoidMethod(socialShare.classID, socialShare.methodID, score);
+    }
+    #endif
+
 }
 
 void GameOverScene::showMainMenu(cocos2d::Ref* pSender)
 {
-    experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    if (isSoundsEnable)
+    {
+        experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    }
 
     currentLevel = 1;
     score = 0;

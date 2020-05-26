@@ -15,7 +15,10 @@ $(LOCAL_PATH)/../../../Classes/Items.cpp \
 $(LOCAL_PATH)/../../../Classes/Baskets.cpp \
 $(LOCAL_PATH)/../../../Classes/GameOverScene.cpp \
 $(LOCAL_PATH)/../../../Classes/LevelCompleteScene.cpp \
-$(LOCAL_PATH)/../../../Classes/LogoSplashScene.cpp
+$(LOCAL_PATH)/../../../Classes/LogoSplashScene.cpp \
+$(LOCAL_PATH)/../../../Classes/SettingsScene.cpp \
+$(LOCAL_PATH)/../../../Classes/RulesScene.cpp \
+$(LOCAL_PATH)/../../../Classes/InfoScene.cpp
 
 LOCAL_CPPFLAGS := -DSDKBOX_ENABLED
 LOCAL_LDLIBS := -landroid \

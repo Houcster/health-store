@@ -19,6 +19,8 @@ extern int badItemCounter;
 extern float itemSpeed;
 
 extern int inGameMusic;
+extern bool isSoundsEnable;
+extern bool isMusicEnable;
 
 Scene* GamingScene::createScene()
 {
@@ -177,14 +179,14 @@ bool GamingScene::init()
     touchListener->onTouchCancelled = CC_CALLBACK_2(GamingScene::onTouchEnded, this);
     this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(touchListener, this);
 
+    if (experimental::AudioEngine::getState(inGameMusic) != experimental::AudioEngine::AudioState::PLAYING && isMusicEnable)
+    {
+        inGameMusic = experimental::AudioEngine::play2d("audio/mainMusic_1.mp3", false, 0.15f);
+    }
     
     schedule(CC_SCHEDULE_SELECTOR(GamingScene::createItems), 1.8f);
     this->scheduleUpdate();
 
-    if (experimental::AudioEngine::getState(inGameMusic) != experimental::AudioEngine::AudioState::PLAYING)
-    {
-        inGameMusic = experimental::AudioEngine::play2d("audio/mainMusic_1.mp3", false, 0.15f);
-    }
     
     return true;
 }
@@ -230,8 +232,6 @@ void GamingScene::createItems(float dt)
             this->addChild(item);
         }
     }
-
-    //CCLOG("got");
 }
 
 bool GamingScene::onContactBegin(PhysicsContact& contact)
@@ -488,6 +488,11 @@ bool GamingScene::onTouchBegan(Touch* touch, Event* event)
         return true;
     }
 
+    if (experimental::AudioEngine::getState(inGameMusic) != experimental::AudioEngine::AudioState::PLAYING && isMusicEnable)
+    {
+        inGameMusic = experimental::AudioEngine::play2d("audio/mainMusic_1.mp3", false, 0.15f);
+    }
+
     return false;
 }
 
@@ -600,20 +605,23 @@ void GamingScene::setRules()
 
 void GamingScene::playSound(int soundKey)
 {
-    switch (soundKey) {
-    case 1:
-        experimental::AudioEngine::play2d("audio/winSound.mp3");
-        break;
-    case 2:
-        experimental::AudioEngine::stop(inGameMusic);
-        experimental::AudioEngine::play2d("audio/loseSound.mp3");
-        break;
-    case 3:
-        experimental::AudioEngine::play2d("audio/basketSound.mp3");
-        break;
-    case 4:
-        experimental::AudioEngine::play2d("audio/trashSound.mp3");
-        break;
+    if (isSoundsEnable)
+    {
+        switch (soundKey) {
+        case 1:
+            experimental::AudioEngine::play2d("audio/winSound.mp3");
+            break;
+        case 2:
+            experimental::AudioEngine::stop(inGameMusic);
+            experimental::AudioEngine::play2d("audio/loseSound.mp3");
+            break;
+        case 3:
+            experimental::AudioEngine::play2d("audio/basketSound.mp3");
+            break;
+        case 4:
+            experimental::AudioEngine::play2d("audio/trashSound.mp3");
+            break;
+        }
     }
 }
 
