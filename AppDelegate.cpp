@@ -8,19 +8,13 @@
 #include "PluginIAP/PluginIAP.h"
 #endif
 #ifdef SDKBOX_ENABLED
-#include "PluginUnityAds/PluginUnityAds.h"
-#endif
-#ifdef SDKBOX_ENABLED
 #include "PluginSdkboxAds/PluginSdkboxAds.h"
 #endif
 #ifdef SDKBOX_ENABLED
 #include "PluginAdMob/PluginAdMob.h"
 #endif
-#ifdef SDKBOX_ENABLED
-#include "PluginChartboost/PluginChartboost.h"
-#endif
 
-// #define USE_AUDIO_ENGINE 1
+#define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1
 
 #if USE_AUDIO_ENGINE && USE_SIMPLE_AUDIO_ENGINE
@@ -55,6 +49,7 @@ int mainTheme;
 int inGameMusic = -2;
 bool isSoundsEnable = true;
 bool isMusicEnable = true;
+bool isAdsEnable = true;
 float itemSpeed = 0;
 
 AppDelegate::AppDelegate()
@@ -64,7 +59,8 @@ AppDelegate::AppDelegate()
 AppDelegate::~AppDelegate() 
 {
 #if USE_AUDIO_ENGINE
-    AudioEngine::end();
+    experimental::AudioEngine::end();
+    Director::getInstance()->release();
 #elif USE_SIMPLE_AUDIO_ENGINE
     SimpleAudioEngine::end();
 #endif
@@ -92,21 +88,16 @@ bool AppDelegate::applicationDidFinishLaunching() {
     sdkbox::IAP::init();
 #endif
 #ifdef SDKBOX_ENABLED
-    sdkbox::PluginUnityAds::init();
-#endif
-#ifdef SDKBOX_ENABLED
     sdkbox::PluginSdkboxAds::init();
 #endif
 #ifdef SDKBOX_ENABLED
     sdkbox::PluginAdMob::init();
 #endif
-#ifdef SDKBOX_ENABLED
-    sdkbox::PluginChartboost::init();
-#endif
     // initialize director
+    Director::getInstance()->retain();
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
-    if(!glview) {
+    if (!glview) {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
         glview = GLViewImpl::createWithRect("health_store", cocos2d::Rect(0, 0, designResolutionSize.width, designResolutionSize.height));
 #else
@@ -126,18 +117,18 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto frameSize = glview->getFrameSize();
     // if the frame's height is larger than the height of medium size.
     if (frameSize.height > mediumResolutionSize.height)
-    {        
-        director->setContentScaleFactor(MIN(largeResolutionSize.height/designResolutionSize.height, largeResolutionSize.width/designResolutionSize.width));
+    {
+        director->setContentScaleFactor(MIN(largeResolutionSize.height / designResolutionSize.height, largeResolutionSize.width / designResolutionSize.width));
     }
     // if the frame's height is larger than the height of small size.
     else if (frameSize.height > smallResolutionSize.height)
-    {        
-        director->setContentScaleFactor(MIN(mediumResolutionSize.height/designResolutionSize.height, mediumResolutionSize.width/designResolutionSize.width));
+    {
+        director->setContentScaleFactor(MIN(mediumResolutionSize.height / designResolutionSize.height, mediumResolutionSize.width / designResolutionSize.width));
     }
     // if the frame's height is smaller than the height of medium size.
     else
-    {        
-        director->setContentScaleFactor(MIN(smallResolutionSize.height/designResolutionSize.height, smallResolutionSize.width/designResolutionSize.width));
+    {
+        director->setContentScaleFactor(MIN(smallResolutionSize.height / designResolutionSize.height, smallResolutionSize.width / designResolutionSize.width));
     }
 
     register_all_packages();
@@ -146,6 +137,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     isSoundsEnable = def->getBoolForKey("IS_SOUNDS_ENABLE", true);
     isMusicEnable = def->getBoolForKey("IS_MUSIC_ENABLE", true);
+    isAdsEnable = def->getBoolForKey("IS_ADS_ENABLE", true);
 
     //Грузим Sprite Sheet
     auto spritecache = SpriteFrameCache::getInstance();
@@ -155,6 +147,13 @@ bool AppDelegate::applicationDidFinishLaunching() {
     spritecache->addSpriteFramesWithFile("hdr/hs_spritesheet_3.plist");
     spritecache->addSpriteFramesWithFile("hdr/hs_spritesheet_4.plist");
     spritecache->addSpriteFramesWithFile("hdr/hs_spritesheet_5.plist");
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+    if (isAdsEnable)
+    {
+        sdkbox::PluginAdMob::cache("rewarded");
+    }
+#endif
 
     visibleSize = Director::getInstance()->getVisibleSize();
   

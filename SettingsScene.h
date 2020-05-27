@@ -10,11 +10,12 @@ public:
 
     virtual bool init();
 
-    cocos2d::Label* sc_soundLabel;
-    cocos2d::Label* sc_musicLabel;
+    cocos2d::Label* removeAdsLabel;
+
     // a selector callback
     void setSoundsEnabling(cocos2d::Ref* pSender);
     void setMusicEnabling(cocos2d::Ref* pSender);
+    void removeAds(cocos2d::Ref* pSender);
     void showMainMenu(cocos2d::Ref* pSender);
     // implement the "static create()" method manually
     CREATE_FUNC(SettingsScene);
