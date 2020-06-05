@@ -23,9 +23,10 @@ public:
     void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
     void playSound(int soundKey);
-
     void createItems(float dt);
     void update(float dt);
+
+    void playBackgroundMusic();
 
 protected:
     std::unordered_map<int, Node*> _mouses;

@@ -51,7 +51,8 @@ bool LogoSplashScene::init()
         && SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hdr/hs_spritesheet_2.plist")
         && SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hdr/hs_spritesheet_3.plist")
         && SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hdr/hs_spritesheet_4.plist")
-        && SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hdr/hs_spritesheet_5.plist"))
+        && SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hdr/hs_spritesheet_5.plist")
+        && SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hdr/hs_spritesheet_6.plist"))
     {
         CCLOG("GG");
         auto logoSprite = Sprite::createWithSpriteFrameName("logo");
@@ -65,6 +66,7 @@ bool LogoSplashScene::init()
 
         experimental::AudioEngine::preload("audio/main_theme.mp3");
         experimental::AudioEngine::preload("audio/mainMusic_1.mp3");
+        experimental::AudioEngine::preload("audio/mainMusic_2.mp3");
         experimental::AudioEngine::preload("audio/buttonSound.mp3");
         experimental::AudioEngine::preload("audio/basketSound.mp3");
         experimental::AudioEngine::preload("audio/loseSound.mp3");

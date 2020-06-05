@@ -17,10 +17,13 @@ extern int levelDoneCount;
 extern int itemCounter;
 extern int badItemCounter;
 extern float itemSpeed;
+extern float itemSpawnFreq;
 
 extern int inGameMusic;
 extern bool isSoundsEnable;
 extern bool isMusicEnable;
+
+static bool musicSwitch;
 
 Scene* GamingScene::createScene()
 {
@@ -179,12 +182,9 @@ bool GamingScene::init()
     touchListener->onTouchCancelled = CC_CALLBACK_2(GamingScene::onTouchEnded, this);
     this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(touchListener, this);
 
-    if (experimental::AudioEngine::getState(inGameMusic) != experimental::AudioEngine::AudioState::PLAYING && isMusicEnable)
-    {
-        inGameMusic = experimental::AudioEngine::play2d("audio/mainMusic_1.mp3", false, 0.15f);
-    }
+    playBackgroundMusic();
     
-    schedule(CC_SCHEDULE_SELECTOR(GamingScene::createItems), 1.8f);
+    schedule(CC_SCHEDULE_SELECTOR(GamingScene::createItems), itemSpawnFreq);
     this->scheduleUpdate();
 
     
@@ -257,12 +257,6 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
         //”словие, при котором удал€ютс€ фрукты, если попали в корзину дл€ фруктов
         if (a->getCollisionBitmask() == 3 && b->getCollisionBitmask() == 1)
         {
-            //nodeA->removeAllComponents();
-            //a->removeFromWorld();
-            //nodeA->removeFromParentAndCleanup(true);
-            //nodeA->removeComponent(a);
-            //nodeA->removeFromParent();
-            //this->removeChild(a->getNode()->getParent());
             a->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeA);
             score++;
@@ -271,12 +265,6 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
         }
         else if (a->getCollisionBitmask() == 1 && b->getCollisionBitmask() == 3)
         {
-            //nodeB->removeAllComponents();
-            //b->removeFromWorld();
-            //nodeB->removeFromParentAndCleanup(true);
-            //nodeB->removeComponent(b);
-            //nodeB->removeFromParent();
-            //this->removeChild(b->getNode()->getParent());
             b->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeB);
             score++;
@@ -286,12 +274,6 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
         //”словие, при котором удал€ютс€ овощи, если попали в корзину дл€ овощей
         else if (a->getCollisionBitmask() == 4 && b->getCollisionBitmask() == 2)
         {
-            //nodeA->removeAllComponents();
-            //a->removeFromWorld();
-            //nodeA->removeFromParentAndCleanup(true);
-            //nodeA->removeComponent(a);
-            //nodeA->removeFromParent();
-            //this->removeChild(a->getNode()->getParent());
             a->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeA);
             score++;
@@ -300,12 +282,6 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
         }
         else if (a->getCollisionBitmask() == 2 && b->getCollisionBitmask() == 4)
         {
-            //nodeB->removeAllComponents();
-            //b->removeFromWorld();
-            //nodeB->removeFromParentAndCleanup(true);
-            //nodeB->removeComponent(b);
-            //nodeB->removeFromParent();
-            //this->removeChild(b->getNode()->getParent());
             b->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeB);
             score++;
@@ -315,12 +291,6 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
         //”словие, при котором удал€етс€ мусор, если попал в мусорку
         else if (a->getCollisionBitmask() == 6 && b->getCollisionBitmask() == 7)
         {
-            //nodeA->removeAllComponents();
-            //a->removeFromWorld();
-            //nodeA->removeFromParentAndCleanup(true);
-            //nodeA->removeComponent(a);
-            //nodeA->removeFromParent();
-            //this->removeChild(a->getNode()->getParent());
             a->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeA);
             score++;
@@ -329,12 +299,6 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
         }
         else if (a->getCollisionBitmask() == 7 && b->getCollisionBitmask() == 6)
         {
-            //nodeB->removeAllComponents();
-            //b->removeFromWorld();
-            //nodeB->removeFromParentAndCleanup(true);
-            //nodeB->removeComponent(b);
-            //nodeB->removeFromParent();
-            //this->removeChild(b->getNode()->getParent());
             b->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeB);
             score++;
@@ -344,9 +308,6 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
         //”словие, при котором игра заканчиваетс€, если фрукт попал в корзину дл€ овощей
         else if (a->getCollisionBitmask() != 4 && b->getCollisionBitmask() == 2)
         {
-            //nodeA->removeComponent(a);
-            //nodeA->removeFromParent();
-            //this->removeChild(a->getNode()->getParent());
             a->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeA);
             lives -= 1;
@@ -356,9 +317,6 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
         }
         else if (a->getCollisionBitmask() == 2 && b->getCollisionBitmask() != 4)
         {
-            //nodeB->removeComponent(b);
-            //nodeB->removeFromParent();
-            //this->removeChild(b->getNode()->getParent());
             b->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeB);
             lives -= 1;
@@ -369,9 +327,6 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
         //”словие, при котором игра заканчиваетс€, если в мусорку попало что-то не то
         else if (a->getCollisionBitmask() != 6 && b->getCollisionBitmask() == 7)
         {
-            //nodeA->removeComponent(a);
-            //nodeA->removeFromParent();
-            //this->removeChild(a->getNode()->getParent());
             a->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeA);
             lives -= 1;
@@ -381,9 +336,6 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
         }
         else if (a->getCollisionBitmask() == 7 && b->getCollisionBitmask() != 6)
         {
-            //nodeB->removeComponent(b);
-            //nodeB->removeFromParent();
-            //this->removeChild(b->getNode()->getParent());
             b->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeB);
             lives -= 1;
@@ -393,9 +345,6 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
         }
         else if (a->getCollisionBitmask() != 3 && b->getCollisionBitmask() == 1)
         {
-            //nodeA->removeComponent(a);
-            //nodeA->removeFromParent();
-            //this->removeChild(a->getNode()->getParent());
             a->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeA);
             lives -= 1;
@@ -405,9 +354,6 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
         }
         else if (a->getCollisionBitmask() == 1 && b->getCollisionBitmask() != 3)
         {
-            //nodeB->removeComponent(b);
-            //nodeB->removeFromParent();
-            //this->removeChild(b->getNode()->getParent());
             b->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeB);
             lives -= 1;
@@ -417,9 +363,6 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
         }
         else if (a->getCollisionBitmask() == 5)
         {
-            //nodeB->removeComponent(b);
-            //nodeB->removeFromParent();
-            //this->removeChild(b->getNode()->getParent());
             b->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeB);
             lives -= 1;
@@ -429,9 +372,6 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
         }
         else if (b->getCollisionBitmask() == 5)
         {
-            //nodeA->removeComponent(a);
-            //nodeA->removeFromParent();
-            //this->removeChild(a->getNode()->getParent());
             a->setContactTestBitmask(false);
             nodesScheduledForRemoval.insert(nodeA);
             lives -= 1;
@@ -449,8 +389,7 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
         }
 
     }
-    //CCLOG("1");
-    //CCLOG("2");
+
     return true;
 }
 
@@ -488,11 +427,6 @@ bool GamingScene::onTouchBegan(Touch* touch, Event* event)
         return true;
     }
 
-    if (experimental::AudioEngine::getState(inGameMusic) != experimental::AudioEngine::AudioState::PLAYING && isMusicEnable)
-    {
-        inGameMusic = experimental::AudioEngine::play2d("audio/mainMusic_1.mp3", false, 0.15f);
-    }
-
     return false;
 }
 
@@ -512,13 +446,12 @@ void GamingScene::onTouchEnded(Touch* touch, Event* event)
 
     if (it != _mouses.end())
     {
-        //this->removeChild(it->second);
-        //it->second->onExit();
         it->second->getPhysicsBody()->setDynamic(true);
         nodesScheduledForRemoval.insert(it->second);
         _mouses.erase(it);
     }
 
+    playBackgroundMusic();
 }
 
 void GamingScene::changeLabelColor(Ref* pSender, Label* label)
@@ -528,13 +461,7 @@ void GamingScene::changeLabelColor(Ref* pSender, Label* label)
 
 void GamingScene::menuCloseCallback(Ref* pSender)
 {
-    //Close the cocos2d-x game scene and quit the application
     Director::getInstance()->end();
-
-    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() as given above,instead trigger a custom event created in RootViewController.mm as below*/
-
-    //EventCustom customEndEvent("game_scene_close_event");
-    //_eventDispatcher->dispatchEvent(&customEndEvent);
 }
 
 void GamingScene::setRules()
@@ -543,62 +470,73 @@ void GamingScene::setRules()
     case 1:
         levelDoneCount = 10;
         itemCounter = 1;
-        itemSpeed = visibleSize.width * -0.15f;
+        itemSpeed = visibleSize.width * -0.1667f;
+        itemSpawnFreq = 1.625f;
         break;
     case 2:
         levelDoneCount = 25;
         itemCounter = 2;
-        itemSpeed = visibleSize.width * -0.15f;
+        itemSpeed = visibleSize.width * -0.17085f;
+        itemSpawnFreq = 1.585f;
         break;
     case 3:
         levelDoneCount = 40;
         itemCounter = 3;
-        itemSpeed = visibleSize.width * -0.15f;
+        itemSpeed = visibleSize.width * -0.175f;
+        itemSpawnFreq = 1.547f;
         break;
     case 4:
         levelDoneCount = 60;
         itemCounter = 3;
-        itemSpeed = visibleSize.width * -0.15f;
+        itemSpeed = visibleSize.width * -0.17915f;
+        itemSpawnFreq = 1.511f;
         break;
     case 5:
         levelDoneCount = 85;
         itemCounter = 4;
-        itemSpeed = visibleSize.width * -0.15f;
+        itemSpeed = visibleSize.width * -0.18335f;
+        itemSpawnFreq = 1.477f;
         break;
     case 6:
         levelDoneCount = 115;
         itemCounter = 5;
-        itemSpeed = visibleSize.width * -0.15f;
+        itemSpeed = visibleSize.width * -0.1875f;
+        itemSpawnFreq = 1.444f;
         break;
     case 7:
         levelDoneCount = 150;
         itemCounter = 5;
         badItemCounter = 1;
-        itemSpeed = visibleSize.width * -0.15f;
+        itemSpeed = visibleSize.width * -0.1925f;
+        itemSpawnFreq = 1.412f;
         break;
     case 8:
         levelDoneCount = 190;
         itemCounter = 6;
         badItemCounter = 1;
-        itemSpeed = visibleSize.width * -0.15f;
+        itemSpeed = visibleSize.width * -0.19575f;
+        itemSpawnFreq = 1.382f;
         break;
     case 9:
         levelDoneCount = 235;
         itemCounter = 6;
         badItemCounter = 2;
-        itemSpeed = visibleSize.width * -0.15f;
+        itemSpeed = visibleSize.width * -0.2f;
+        itemSpawnFreq = 1.354f;
         break;
     case 10:
         levelDoneCount = 285;
         itemCounter = 7;
         badItemCounter = 2;
-        itemSpeed = visibleSize.width * -0.15f;
+        itemSpeed = visibleSize.width * -0.20415f;
+        itemSpawnFreq = 1.326f;
         break;
     case 11:
         levelDoneCount = 350;
         itemCounter = 7;
         badItemCounter = 3;
-        itemSpeed = visibleSize.width * -0.15f;
+        itemSpeed = visibleSize.width * -0.2085f;
+        itemSpawnFreq = 1.3f;
         break;
     }
 }
@@ -622,6 +560,24 @@ void GamingScene::playSound(int soundKey)
             experimental::AudioEngine::play2d("audio/trashSound.mp3");
             break;
         }
+    }
+}
+
+void GamingScene::playBackgroundMusic()
+{
+    if (isMusicEnable && experimental::AudioEngine::getState(inGameMusic) != experimental::AudioEngine::AudioState::PLAYING)
+    {
+        if (musicSwitch)
+        {
+            inGameMusic = experimental::AudioEngine::play2d("audio/mainMusic_2.mp3", false, 0.4f);
+            musicSwitch = false;
+        }
+        else
+        {
+            inGameMusic = experimental::AudioEngine::play2d("audio/mainMusic_1.mp3", false, 0.4f);
+            musicSwitch = true;
+        }
+        
     }
 }
 

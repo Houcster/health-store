@@ -31,8 +31,13 @@ bool InfoScene::init()
 
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-    auto bg = cocos2d::LayerColor::create(Color4B(175, 200, 115, 255)); //Color4B(175, 200, 115, 255)Color4B(250, 190, 25, 255)
-    this->addChild(bg);
+    //auto bg = cocos2d::LayerColor::create(Color4B(175, 200, 115, 255)); //Color4B(175, 200, 115, 255)Color4B(250, 190, 25, 255)
+    //this->addChild(bg);
+
+    auto infoBGSprite = Sprite::createWithSpriteFrameName("settingsBG");
+    infoBGSprite->setContentSize(Size(visibleSize.width, visibleSize.height));
+    infoBGSprite->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.5f);
+    addChild(infoBGSprite);
 
     auto developerLabel_1 = Label::createWithTTF("Main programmer, Producer, etc.: \nAnton 'Houcster' Guryev", "fonts/arial.ttf", 44);
     developerLabel_1->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.875f);
@@ -63,8 +68,8 @@ bool InfoScene::init()
         Sprite::createWithSpriteFrameName("backButtonPressed"),
         CC_CALLBACK_1(InfoScene::showMainMenu, this));
 
-    mainMenuItem->setPosition(visibleSize.width * 0.04f, visibleSize.height * 0.065f);
-    mainMenuItem->setContentSize(Size(visibleSize.width * 0.055f, visibleSize.height * 0.095f));
+    mainMenuItem->setPosition(visibleSize.width * 0.04f, visibleSize.height * 0.0715f);
+    mainMenuItem->setContentSize(Size(visibleSize.width * 0.075f, visibleSize.height * 0.1325f));
     mainMenuItem->getNormalImage()->setContentSize(mainMenuItem->getContentSize());
     mainMenuItem->getSelectedImage()->setContentSize(mainMenuItem->getContentSize());
 

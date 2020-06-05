@@ -113,11 +113,11 @@ bool MainMenuScene::init()
     infoItem->getSelectedImage()->setContentSize(infoItem->getContentSize());
 
     auto* menu = Menu::create(playItem,
-        closeItem,
-        settingsItem,
-        rulesItem,
-        infoItem,
-        NULL);
+                              closeItem,
+                              settingsItem,
+                              rulesItem,
+                              infoItem,
+                              NULL);
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
 
@@ -125,7 +125,7 @@ bool MainMenuScene::init()
 
     if (experimental::AudioEngine::getState(mainTheme) != experimental::AudioEngine::AudioState::PLAYING && isMusicEnable)
     {
-        mainTheme = experimental::AudioEngine::play2d("audio/main_theme.mp3", false, 0.15f);
+        mainTheme = experimental::AudioEngine::play2d("audio/main_theme.mp3", true, 0.4f);
     }
 
     return true;

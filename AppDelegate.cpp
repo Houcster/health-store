@@ -7,9 +7,9 @@
 #ifdef SDKBOX_ENABLED
 #include "PluginIAP/PluginIAP.h"
 #endif
-#ifdef SDKBOX_ENABLED
-#include "PluginSdkboxAds/PluginSdkboxAds.h"
-#endif
+//#ifdef SDKBOX_ENABLED
+//#include "PluginSdkboxAds/PluginSdkboxAds.h"
+//#endif
 #ifdef SDKBOX_ENABLED
 #include "PluginAdMob/PluginAdMob.h"
 #endif
@@ -47,10 +47,12 @@ int badItemCounter = 0;
 int highScore = 0;
 int mainTheme;
 int inGameMusic = -2;
+int showAdsCounter = 0;
 bool isSoundsEnable = true;
 bool isMusicEnable = true;
 bool isAdsEnable = true;
 float itemSpeed = 0;
+float itemSpawnFreq = 1.8f;
 
 AppDelegate::AppDelegate()
 {
@@ -87,9 +89,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
 #ifdef SDKBOX_ENABLED
     sdkbox::IAP::init();
 #endif
-#ifdef SDKBOX_ENABLED
-    sdkbox::PluginSdkboxAds::init();
-#endif
+//#ifdef SDKBOX_ENABLED
+//    sdkbox::PluginSdkboxAds::init();
+//#endif
 #ifdef SDKBOX_ENABLED
     sdkbox::PluginAdMob::init();
 #endif
@@ -139,21 +141,24 @@ bool AppDelegate::applicationDidFinishLaunching() {
     isMusicEnable = def->getBoolForKey("IS_MUSIC_ENABLE", true);
     isAdsEnable = def->getBoolForKey("IS_ADS_ENABLE", true);
 
-    //Грузим Sprite Sheet
+    //пїЅпїЅпїЅпїЅпїЅпїЅ Sprite Sheet
     auto spritecache = SpriteFrameCache::getInstance();
-    //spritecache->addSpriteFramesWithFile("hs_spritesheet.plist");
+
     spritecache->addSpriteFramesWithFile("hdr/hs_spritesheet_1.plist");
     spritecache->addSpriteFramesWithFile("hdr/hs_spritesheet_2.plist");
     spritecache->addSpriteFramesWithFile("hdr/hs_spritesheet_3.plist");
     spritecache->addSpriteFramesWithFile("hdr/hs_spritesheet_4.plist");
     spritecache->addSpriteFramesWithFile("hdr/hs_spritesheet_5.plist");
+    spritecache->addSpriteFramesWithFile("hdr/hs_spritesheet_6.plist");
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+#ifdef SDKBOX_ENABLED
     if (isAdsEnable)
     {
         sdkbox::PluginAdMob::cache("rewarded");
+        sdkbox::PluginAdMob::cache("next_level");
     }
 #endif
+
 
     visibleSize = Director::getInstance()->getVisibleSize();
   

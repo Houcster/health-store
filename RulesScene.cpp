@@ -41,8 +41,8 @@ bool RulesScene::init()
         Sprite::createWithSpriteFrameName("backButtonPressed"),
         CC_CALLBACK_1(RulesScene::showMainMenu, this));
 
-    mainMenuItem->setPosition(visibleSize.width * 0.04f, visibleSize.height * 0.065f);
-    mainMenuItem->setContentSize(Size(visibleSize.width * 0.055f, visibleSize.height * 0.095f));
+    mainMenuItem->setPosition(visibleSize.width * 0.04f, visibleSize.height * 0.0715f);
+    mainMenuItem->setContentSize(Size(visibleSize.width * 0.075f, visibleSize.height * 0.1325f));
     mainMenuItem->getNormalImage()->setContentSize(mainMenuItem->getContentSize());
     mainMenuItem->getSelectedImage()->setContentSize(mainMenuItem->getContentSize());
 

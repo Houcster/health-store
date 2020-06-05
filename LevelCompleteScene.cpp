@@ -5,6 +5,10 @@
 #include "LevelCompleteScene.h"
 #include "AudioEngine.h"
 
+#ifdef SDKBOX_ENABLED
+#include "PluginAdMob/PluginAdMob.h"
+#endif
+
 USING_NS_CC;
 
 extern int score;
@@ -16,6 +20,8 @@ extern int itemCounter;
 extern float itemSpeed;
 extern int lives;
 extern int badItemCounter;
+extern int showAdsCounter;
+extern bool isAdsEnable;
 extern bool isSoundsEnable;
 extern bool isMusicEnable;
 
@@ -97,12 +103,35 @@ bool LevelCompleteScene::init()
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
 
+    scheduleOnce(CC_SCHEDULE_SELECTOR(LevelCompleteScene::showAds), 1.0f);
+
     return true;
+}
+
+void LevelCompleteScene::showAds(float dt)
+{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+    if (isAdsEnable)
+    {
+        showAdsCounter++;
+        if (showAdsCounter == 4)
+        {
+            if (sdkbox::PluginAdMob::isAvailable("next_level"))
+            {
+                sdkbox::PluginAdMob::show("next_level");
+                showAdsCounter = 0;
+            }
+            else
+            {
+                showAdsCounter--;
+            }
+        }
+    }
+#endif
 }
 
 void LevelCompleteScene::createGamingScene(Ref* pSender)
 {
-    //Метод создаёт игровую сцену(Gaming Scene), при этом текущая сцена(MainMenuScene) удаляется
     if (isSoundsEnable)
     {
         experimental::AudioEngine::play2d("audio/buttonSound.mp3");

@@ -8,7 +8,6 @@
 
 USING_NS_CC;
 
-
 extern Size visibleSize;
 extern bool isSoundsEnable;
 extern bool isMusicEnable;
@@ -16,7 +15,8 @@ extern bool isAdsEnable;
 
 MenuItemSprite* soundStateItem;
 MenuItemSprite* musicStateItem;
-
+MenuItemSprite* removeAdsItem;
+Label* removeAdsLabel;
 
 Scene* SettingsScene::createScene()
 {
@@ -42,32 +42,38 @@ bool SettingsScene::init()
 
     Vec2 origin = Director::getInstance()->getVisibleOrigin(); 
 
-    auto bg = cocos2d::LayerColor::create(Color4B(110, 190, 235, 255)); //Color4B(175, 200, 115, 255)Color4B(250, 190, 25, 255)
-    this->addChild(bg);
+    //auto bg = cocos2d::LayerColor::create(Color4B(110, 190, 235, 255)); //Color4B(175, 200, 115, 255)Color4B(250, 190, 25, 255)
+    //this->addChild(bg);
+
+    auto settingsBGSprite = Sprite::createWithSpriteFrameName("settingsBG");
+    settingsBGSprite->setContentSize(Size(visibleSize.width, visibleSize.height));
+    settingsBGSprite->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.5f);
+    addChild(settingsBGSprite);
 
 
     auto soundLabel = Label::createWithTTF("Sound", "fonts/arial.ttf", 44);
-    soundLabel->setPosition(visibleSize.width * 0.1f, visibleSize.height * 0.75f);
+    soundLabel->setPosition(visibleSize.width * 0.1f, visibleSize.height * 0.65f);
     soundLabel->setColor(Color3B::BLACK);
     this->addChild(soundLabel, 1);
 
 
     auto musicLabel = Label::createWithTTF("Music", "fonts/arial.ttf", 44);
-    musicLabel->setPosition(visibleSize.width * 0.1f, visibleSize.height * 0.45f);
+    musicLabel->setPosition(visibleSize.width * 0.1f, visibleSize.height * 0.35f);
     musicLabel->setColor(Color3B::BLACK);
     this->addChild(musicLabel, 1);
 
     removeAdsLabel = Label::createWithTTF("Ads is available", "fonts/arial.ttf", 44);
-    removeAdsLabel->setPosition(visibleSize.width * 0.7f, visibleSize.height * 0.75f);
+    removeAdsLabel->setPosition(visibleSize.width * 0.7f, visibleSize.height * 0.85f);
     removeAdsLabel->setColor(Color3B::BLACK);
     if (isAdsEnable)
     {
-        removeAdsLabel->setString("Ads is available");
+        removeAdsLabel->setString("Ads are available");
     }
     else
     {
-        removeAdsLabel->setString("Ads is unavailable");
+        removeAdsLabel->setString("Ads removed");
     }
+
     this->addChild(removeAdsLabel, 1);
 
     soundStateItem = MenuItemSprite::create(
@@ -75,7 +81,7 @@ bool SettingsScene::init()
         Sprite::createWithSpriteFrameName("enableIcon"),
         CC_CALLBACK_1(SettingsScene::setSoundsEnabling, this)); 
 
-    soundStateItem->setPosition(visibleSize.width * 0.3f, visibleSize.height * 0.75f);
+    soundStateItem->setPosition(visibleSize.width * 0.3f, visibleSize.height * 0.65f);
     soundStateItem->setContentSize(Size(visibleSize.width * 0.085f, visibleSize.height * 0.15f));
     
     if (isSoundsEnable)
@@ -100,7 +106,7 @@ bool SettingsScene::init()
         Sprite::createWithSpriteFrameName("enableIcon"),
         CC_CALLBACK_1(SettingsScene::setMusicEnabling, this));
 
-    musicStateItem->setPosition(visibleSize.width * 0.3f, visibleSize.height * 0.45f);
+    musicStateItem->setPosition(visibleSize.width * 0.3f, visibleSize.height * 0.35f);
     musicStateItem->setContentSize(Size(visibleSize.width * 0.085f, visibleSize.height * 0.15f));
 
     if (isMusicEnable)
@@ -120,33 +126,56 @@ bool SettingsScene::init()
         musicStateItem->getSelectedImage()->setContentSize(musicStateItem->getContentSize());
     }
 
-    auto removeAdsItem = MenuItemSprite::create(
+    removeAdsItem = MenuItemSprite::create(
         Sprite::createWithSpriteFrameName("removeAdsButton"),
         Sprite::createWithSpriteFrameName("removeAdsButtonPressed"),
+        Sprite::createWithSpriteFrameName("removeUnenable"),
         CC_CALLBACK_1(SettingsScene::removeAds, this));
 
-    removeAdsItem->setPosition(visibleSize.width * 0.7f, visibleSize.height * 0.45f);
-    removeAdsItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
+    removeAdsItem->setPosition(visibleSize.width * 0.7f, visibleSize.height * 0.65f);
+    removeAdsItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.15f));
     removeAdsItem->getNormalImage()->setContentSize(removeAdsItem->getContentSize());
     removeAdsItem->getSelectedImage()->setContentSize(removeAdsItem->getContentSize());
+    removeAdsItem->getDisabledImage()->setContentSize(removeAdsItem->getContentSize());
+
+    if (!isAdsEnable)
+    {
+        removeAdsItem->setEnabled(false);
+    }
+
+    auto restoreAdsItem = MenuItemSprite::create(
+            Sprite::createWithSpriteFrameName("restoreAdsButton"),
+            Sprite::createWithSpriteFrameName("restoreAdsButtonPressed"),
+            CC_CALLBACK_1(SettingsScene::restoreAds, this));
+
+    restoreAdsItem->setPosition(visibleSize.width * 0.7f, visibleSize.height * 0.35f);
+    restoreAdsItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.15f));
+    restoreAdsItem->getNormalImage()->setContentSize(removeAdsItem->getContentSize());
+    restoreAdsItem->getSelectedImage()->setContentSize(removeAdsItem->getContentSize());
 
     auto mainMenuItem = MenuItemSprite::create(
         Sprite::createWithSpriteFrameName("backButton"),
         Sprite::createWithSpriteFrameName("backButtonPressed"),
         CC_CALLBACK_1(SettingsScene::showMainMenu, this));
 
-    mainMenuItem->setPosition(visibleSize.width * 0.04f, visibleSize.height * 0.065f);
-    mainMenuItem->setContentSize(Size(visibleSize.width * 0.055f, visibleSize.height * 0.095f));
+    mainMenuItem->setPosition(visibleSize.width * 0.04f, visibleSize.height * 0.0715f);
+    mainMenuItem->setContentSize(Size(visibleSize.width * 0.075f, visibleSize.height * 0.1325f));
     mainMenuItem->getNormalImage()->setContentSize(mainMenuItem->getContentSize());
     mainMenuItem->getSelectedImage()->setContentSize(mainMenuItem->getContentSize());
 
     auto* menu = Menu::create(soundStateItem,
                               musicStateItem,
                               removeAdsItem,
+                              restoreAdsItem,
                               mainMenuItem,
                               NULL);
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
+
+#ifdef SDKBOX_ENABLED
+    sdkbox::IAP::refresh();
+    sdkbox::IAP::setListener(this);
+#endif
 
     return true;
 }
@@ -166,8 +195,6 @@ void SettingsScene::setSoundsEnabling(Ref* pSender)
         soundStateItem->setContentSize(Size(visibleSize.width * 0.085f, visibleSize.height * 0.15f));
         soundStateItem->getNormalImage()->setContentSize(soundStateItem->getContentSize());
         soundStateItem->getSelectedImage()->setContentSize(soundStateItem->getContentSize());
-
-        experimental::AudioEngine::stopAll();
     }
     else
     {
@@ -181,7 +208,6 @@ void SettingsScene::setSoundsEnabling(Ref* pSender)
         soundStateItem->setContentSize(Size(visibleSize.width * 0.085f, visibleSize.height * 0.15f));
         soundStateItem->getNormalImage()->setContentSize(soundStateItem->getContentSize());
         soundStateItem->getSelectedImage()->setContentSize(soundStateItem->getContentSize());
-
     }
 
     
@@ -228,21 +254,16 @@ void SettingsScene::setMusicEnabling(Ref* pSender)
 
 void SettingsScene::removeAds(cocos2d::Ref* pSender)
 {
-    UserDefault* def = UserDefault::getInstance();
-    if (isAdsEnable)
-    {
-        isAdsEnable = false;
-        def->setBoolForKey("IS_ADS_ENABLE", isAdsEnable);
-        removeAdsLabel->setString("Ads is unavailable");
-    }
-    else
-    {
-        isAdsEnable = true;
-        removeAdsLabel->setString("Ads is available");
-        def->setBoolForKey("IS_ADS_ENABLE", isAdsEnable);
-    }
+#ifdef SDKBOX_ENABLED
+    sdkbox::IAP::purchase("remove_ads");
+#endif
+}
 
-    def->flush();
+void SettingsScene::restoreAds(cocos2d::Ref* pSender)
+{
+#ifdef SDKBOX_ENABLED
+    sdkbox::IAP::restore();
+#endif
 }
 
 void SettingsScene::showMainMenu(cocos2d::Ref* pSender)
@@ -255,3 +276,30 @@ void SettingsScene::showMainMenu(cocos2d::Ref* pSender)
     auto MainMenuScene = MainMenuScene::createScene();
     Director::getInstance()->replaceScene(TransitionSlideInL::create(1, MainMenuScene));
 }
+
+#ifdef SDKBOX_ENABLED
+void SettingsScene::onInitialized(bool ok){}
+void SettingsScene::onSuccess(sdkbox::Product const& p)
+{
+    UserDefault* def = UserDefault::getInstance();
+    isAdsEnable = false;
+    def->setBoolForKey("IS_ADS_ENABLE", isAdsEnable);
+    removeAdsLabel->setString("Ads is removed");
+    removeAdsItem->setEnabled(false);
+    def->flush();
+}
+void SettingsScene::onFailure(sdkbox::Product const& p, const std::string &msg){}
+void SettingsScene::onCanceled(sdkbox::Product const& p){}
+void SettingsScene::onRestored(sdkbox::Product const& p)
+{
+    UserDefault* def = UserDefault::getInstance();
+    isAdsEnable = false;
+    def->setBoolForKey("IS_ADS_ENABLE", isAdsEnable);
+    removeAdsLabel->setString("Ads is removed");
+    removeAdsItem->setEnabled(false);
+    def->flush();
+}
+void SettingsScene::onProductRequestSuccess(std::vector<sdkbox::Product> const &products){}
+void SettingsScene::onProductRequestFailure(const std::string &msg){}
+void SettingsScene::onRestoreComplete(bool ok, const std::string &msg){}
+#endif

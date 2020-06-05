@@ -4,10 +4,6 @@
 #include "AppDelegate.h"
 #include "AudioEngine.h"
 
-#ifdef SDKBOX_ENABLED
-#include "PluginAdMob/PluginAdMob.h"
-#endif
-
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 // include JniHelper.h
 #include "platform\android\jni\JniHelper.h"
@@ -27,6 +23,10 @@ extern float itemSpeed;
 extern bool isSoundsEnable;
 extern bool isMusicEnable;
 extern bool isAdsEnable;
+extern float itemSpawnFreq;
+
+static bool isRewarded = false;
+MenuItemSprite* restartItem;
 
 Scene* GameOverScene::createScene()
 {
@@ -81,10 +81,9 @@ bool GameOverScene::init()
     }
 
 
-    auto restartItem = MenuItemSprite::create(
-        Sprite::createWithSpriteFrameName("keepGoByAds"),
-        Sprite::createWithSpriteFrameName("keepGoByAdsPressed"),
-        CC_CALLBACK_1(GameOverScene::createGamingScene, this));
+    restartItem = MenuItemSprite::create(
+        Sprite::createWithSpriteFrameName("continueNoAds"),
+        Sprite::createWithSpriteFrameName("continueNoAdsPressed"));
 
     restartItem->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.56f);
     restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
@@ -94,14 +93,16 @@ bool GameOverScene::init()
     { 
         if (lives == 1 && sdkbox::PluginAdMob::isAvailable("rewarded"))
         {
-            restartItem->setNormalImage(Sprite::createWithSpriteFrameName("keepGoByAds"));
-            restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("keepGoByAdsPressed"));
+            restartItem->setCallback(CC_CALLBACK_1(GameOverScene::continueGame, this));
+            restartItem->setNormalImage(Sprite::createWithSpriteFrameName("continueByAds"));
+            restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("continueByAdsPressed"));
             restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
             restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
             restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
         }
         else
         {
+            restartItem->setCallback(CC_CALLBACK_1(GameOverScene::restartGame, this));
             restartItem->setNormalImage(Sprite::createWithSpriteFrameName("gmovrRestartButton"));
             restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("gmovrRestartButtonPressed"));
             restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
@@ -113,14 +114,16 @@ bool GameOverScene::init()
     {
         if (lives == 1)
         {
-            restartItem->setNormalImage(Sprite::createWithSpriteFrameName("keepGoNoAds"));
-            restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("keepGoNoAdsPressed"));
+            restartItem->setCallback(CC_CALLBACK_1(GameOverScene::continueGame, this));
+            restartItem->setNormalImage(Sprite::createWithSpriteFrameName("continueNoAds"));
+            restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("continueNoAdsPressed"));
             restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
             restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
             restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
         }
         else
         {
+            restartItem->setCallback(CC_CALLBACK_1(GameOverScene::restartGame, this));
             restartItem->setNormalImage(Sprite::createWithSpriteFrameName("gmovrRestartButton"));
             restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("gmovrRestartButtonPressed"));
             restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
@@ -131,44 +134,25 @@ bool GameOverScene::init()
 #endif
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-    if (isAdsEnable)
+    if (lives == 1)
     {
-        if (lives == 1)
-        {
-            restartItem->setNormalImage(Sprite::createWithSpriteFrameName("keepGoByAds"));
-            restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("keepGoByAdsPressed"));
-            restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
-            restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
-            restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
-        }
-        else
-        {
-            restartItem->setNormalImage(Sprite::createWithSpriteFrameName("gmovrRestartButton"));
-            restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("gmovrRestartButtonPressed"));
-            restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
-            restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
-            restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
-        }
+        restartItem->setCallback(CC_CALLBACK_1(GameOverScene::continueGame, this));
+        restartItem->setNormalImage(Sprite::createWithSpriteFrameName("continueNoAds"));
+        restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("continueNoAdsPressed"));
+        restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
+        restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
+        restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
     }
     else
     {
-        if (lives == 1)
-        {
-            restartItem->setNormalImage(Sprite::createWithSpriteFrameName("keepGoNoAds"));
-            restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("keepGoNoAdsPressed"));
-            restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
-            restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
-            restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
-        }
-        else
-        {
-            restartItem->setNormalImage(Sprite::createWithSpriteFrameName("gmovrRestartButton"));
-            restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("gmovrRestartButtonPressed"));
-            restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
-            restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
-            restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
-        }
+        restartItem->setCallback(CC_CALLBACK_1(GameOverScene::restartGame, this));
+        restartItem->setNormalImage(Sprite::createWithSpriteFrameName("gmovrRestartButton"));
+        restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("gmovrRestartButtonPressed"));
+        restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
+        restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
+        restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
     }
+    
 #endif
 
 
@@ -199,57 +183,28 @@ bool GameOverScene::init()
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
 
+#ifdef SDKBOX_ENABLED
+    sdkbox::PluginAdMob::setListener(this);
+#endif
     return true;
 }
 
-void GameOverScene::createGamingScene(Ref* pSender)
+void GameOverScene::restartGame(cocos2d::Ref* pSender)
 {
-    if (isSoundsEnable)
-    {
-        experimental::AudioEngine::play2d("audio/buttonSound.mp3");
-    }
-
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-    if (isAdsEnable)
-    {
-        if (lives != 0 && sdkbox::PluginAdMob::isAvailable("rewarded"))
-        {
-            sdkbox::PluginAdMob::show("rewarded");
-            auto GamingScene = GamingScene::createScene();
-            Director::getInstance()->replaceScene(TransitionSlideInL::create(1, GamingScene));
-        }
-        else
-        {
-            lives = 2;
-            currentLevel = 1;
-            score = 0;
-            auto GamingScene = GamingScene::createScene();
-            Director::getInstance()->replaceScene(TransitionSlideInL::create(1, GamingScene));
-        }
-    }
-    else
-    {
-        if (lives != 0)
-        {
-            auto GamingScene = GamingScene::createScene();
-            Director::getInstance()->replaceScene(TransitionSlideInL::create(1, GamingScene));
-        }
-        else
-        {
-            lives = 2;
-            currentLevel = 1;
-            score = 0;
-            auto GamingScene = GamingScene::createScene();
-            Director::getInstance()->replaceScene(TransitionSlideInL::create(1, GamingScene));
-        }
-    }
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+    lives = 2;
+    currentLevel = 1;
+    score = 0;
+    auto GamingScene = GamingScene::createScene();
+    Director::getInstance()->replaceScene(TransitionSlideInL::create(1, GamingScene));
 #endif
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-    if (lives != 0)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+    if (isRewarded)
     {
         auto GamingScene = GamingScene::createScene();
         Director::getInstance()->replaceScene(TransitionSlideInL::create(1, GamingScene));
+        isRewarded = false;
     }
     else
     {
@@ -258,7 +213,55 @@ void GameOverScene::createGamingScene(Ref* pSender)
         score = 0;
         auto GamingScene = GamingScene::createScene();
         Director::getInstance()->replaceScene(TransitionSlideInL::create(1, GamingScene));
+        isRewarded = false;
     }
+#endif
+
+}
+
+void GameOverScene::continueGame(cocos2d::Ref* pSender)
+{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+    auto GamingScene = GamingScene::createScene();
+    Director::getInstance()->replaceScene(TransitionSlideInL::create(1, GamingScene));
+#endif
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+    if (isAdsEnable)
+    {
+            experimental::AudioEngine::stopAll();
+            sdkbox::PluginAdMob::show("rewarded");
+
+            restartItem->setCallback(CC_CALLBACK_1(GameOverScene::restartGame, this));
+            restartItem->setNormalImage(Sprite::createWithSpriteFrameName("gmovrRestartButton"));
+            restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("gmovrRestartButtonPressed"));
+            restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
+            restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
+            restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
+    }
+    else
+    {
+        auto GamingScene = GamingScene::createScene();
+        Director::getInstance()->replaceScene(TransitionSlideInL::create(1, GamingScene));
+    }
+#endif
+}
+
+void GameOverScene::continueGameByAds(cocos2d::Ref* pSender)
+{
+    auto GamingScene = GamingScene::createScene();
+    Director::getInstance()->replaceScene(TransitionSlideInL::create(1, GamingScene));
+}
+
+void GameOverScene::getReward()
+{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+    restartItem->setCallback(CC_CALLBACK_1(GameOverScene::continueGameByAds, this));
+    restartItem->setNormalImage(Sprite::createWithSpriteFrameName("readyButton"));
+    restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("readyButtonPressed"));
+    restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
+    restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
+    restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
 #endif
 }
 
@@ -295,8 +298,27 @@ void GameOverScene::showMainMenu(cocos2d::Ref* pSender)
     itemCounter = 0;
     badItemCounter = 0;
     itemSpeed = 0;
+    itemSpawnFreq = 1.8f;
     auto MainMenuScene = MainMenuScene::createScene();
     Director::getInstance()->replaceScene(TransitionSlideInL::create(1, MainMenuScene));
 }
+
+#ifdef SDKBOX_ENABLED
+void GameOverScene::adViewDidReceiveAd(const std::string &name) {}
+void GameOverScene::adViewDidFailToReceiveAdWithError(const std::string &name, const std::string &msg) {}
+void GameOverScene::adViewWillPresentScreen(const std::string &name) {}
+void GameOverScene::adViewDidDismissScreen(const std::string &name) {}
+void GameOverScene::adViewWillDismissScreen(const std::string &name) {}
+void GameOverScene::adViewWillLeaveApplication(const std::string &name) {}
+void GameOverScene::reward(const std::string &name, const std::string &currency, double amount)
+{
+    isRewarded = true;
+    restartItem->setNormalImage(Sprite::createWithSpriteFrameName("readyButton"));
+    restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("readyButtonPressed"));
+    restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
+    restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
+    restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
+}
+#endif
 
 

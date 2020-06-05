@@ -11,9 +11,10 @@ public:
     virtual bool init();
 
     cocos2d::Label* lcs_label;
-    // a selector callback
+    void showAds(float dt);
     void showMainMenu(cocos2d::Ref* pSender);
     void createGamingScene(cocos2d::Ref* pSender);
+    
     // implement the "static create()" method manually
     CREATE_FUNC(LevelCompleteScene);
 };
