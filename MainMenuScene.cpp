@@ -8,14 +8,15 @@
 #include "InfoScene.h"
 
 USING_NS_CC;
+
 extern Size visibleSize;
+
 extern int highScore;
 extern int inGameMusic;
 extern int mainTheme;
+
 extern bool isSoundsEnable;
 extern bool isMusicEnable;
-
-static int bgMusic = -1;
 
 Scene* MainMenuScene::createScene()
 {
@@ -32,8 +33,6 @@ static void problemLoading(const char* filename)
 // on "init" you need to initialize your instance
 bool MainMenuScene::init()
 {
-    //////////////////////////////
-    // 1. super init first
     if (!Scene::init())
     {
         return false;
@@ -44,11 +43,7 @@ bool MainMenuScene::init()
     highScore = def->getIntegerForKey("HIGHSCORE", 0);
 
     visibleSize = Director::getInstance()->getVisibleSize();
-    //Vec2 origin = Director::getInstance()->getVisibleOrigin();
     auto glview = Director::getInstance()->getOpenGLView();
-
-    //CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("audio/main_theme.mp3");
-    //CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("audio/main_theme.mp3", true);
 
     auto mainMenuBGSprite = Sprite::createWithSpriteFrameName("mainMenuBG");
     mainMenuBGSprite->setContentSize(Size(visibleSize.width, visibleSize.height));
@@ -80,8 +75,6 @@ bool MainMenuScene::init()
     closeItem->getNormalImage()->setContentSize(closeItem->getContentSize());
     closeItem->getSelectedImage()->setContentSize(closeItem->getContentSize());
 
-    //closeItem->setScale(screenSize.width * 0.000225f);
-
     auto settingsItem = MenuItemSprite::create(
         Sprite::createWithSpriteFrameName("settingsButton"),
         Sprite::createWithSpriteFrameName("settingsButtonPressed"),
@@ -112,12 +105,13 @@ bool MainMenuScene::init()
     infoItem->getNormalImage()->setContentSize(infoItem->getContentSize());
     infoItem->getSelectedImage()->setContentSize(infoItem->getContentSize());
 
-    auto* menu = Menu::create(playItem,
-                              closeItem,
-                              settingsItem,
-                              rulesItem,
-                              infoItem,
-                              NULL);
+    auto* menu = Menu::create(
+        playItem,
+        closeItem,
+        settingsItem,
+        rulesItem,
+        infoItem,
+        NULL);
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
 
@@ -172,16 +166,9 @@ void MainMenuScene::createGamingScene(Ref* pSender)
         experimental::AudioEngine::play2d("audio/buttonSound.mp3");
     }
     experimental::AudioEngine::stop(mainTheme);
-    //experimental::AudioEngine::play2d("audio/buttonSound.mp3");
 
     auto GamingScene = GamingScene::createScene();
     Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GamingScene));
-
-    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() as given above,instead trigger a custom event created in RootViewController.mm as below*/
-
-    //EventCustom customEndEvent("game_scene_close_event");
-    //_eventDispatcher->dispatchEvent(&customEndEvent);
-
 }
 
 void MainMenuScene::menuCloseCallback(Ref* pSender)
@@ -193,10 +180,4 @@ void MainMenuScene::menuCloseCallback(Ref* pSender)
 
     //Close the cocos2d-x game scene and quit the application
     Director::getInstance()->end();
-
-    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() as given above,instead trigger a custom event created in RootViewController.mm as below*/
-
-    //EventCustom customEndEvent("game_scene_close_event");
-    //_eventDispatcher->dispatchEvent(&customEndEvent);
-
 }

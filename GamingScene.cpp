@@ -8,7 +8,6 @@
 
 USING_NS_CC;
 
-static const int DRAG_BODYS_TAG = 0x80;
 extern Size visibleSize;
 extern int score;
 extern int lives;
@@ -16,13 +15,15 @@ extern int currentLevel;
 extern int levelDoneCount;
 extern int itemCounter;
 extern int badItemCounter;
+extern int inGameMusic;
+
 extern float itemSpeed;
 extern float itemSpawnFreq;
 
-extern int inGameMusic;
 extern bool isSoundsEnable;
 extern bool isMusicEnable;
 
+static const int DRAG_BODYS_TAG = 0x80;
 static bool musicSwitch;
 
 Scene* GamingScene::createScene()
@@ -62,9 +63,6 @@ bool GamingScene::init()
 
     setRules();
 
-    //LayerColor* _bgColor = LayerColor::create(Color4B(124, 130, 130, 255));
-    //this->addChild(_bgColor, -10);
-
     auto gamingSceneBGSprite = Sprite::createWithSpriteFrameName("inGameBG");
     gamingSceneBGSprite->setContentSize(Size(visibleSize.width, visibleSize.height));
     gamingSceneBGSprite->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.5f);
@@ -72,12 +70,6 @@ bool GamingScene::init()
 
     visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
-    /////////////////////////////
-    // 2. add your codes below...
-
-    // add a label shows "Hello World"
-    // create and initialize a label
 
     gs_levelLabel = Label::createWithTTF("Level: " + std::to_string(currentLevel), "fonts/arial.ttf", 24);
     if (gs_levelLabel == nullptr)
@@ -111,7 +103,6 @@ bool GamingScene::init()
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
 
-    //////////////////////////////////////////
     auto borderBody = PhysicsBody::createEdgeBox(visibleSize, PHYSICSBODY_MATERIAL_DEFAULT, 3);
 
     auto borderNode = Node::create();
@@ -119,7 +110,6 @@ bool GamingScene::init()
     borderNode->setPhysicsBody(borderBody);
     addChild(borderNode);
 
-    ////////////////////////////////////////////////////////////////////////////
     auto groundBody = PhysicsBody::createBox(Size(visibleSize.width, visibleSize.height * 0.03f), PHYSICSBODY_MATERIAL_DEFAULT);
     groundBody->setCollisionBitmask(5);
     groundBody->setContactTestBitmask(true);
@@ -130,7 +120,6 @@ bool GamingScene::init()
     groundNode->setPhysicsBody(groundBody);
     addChild(groundNode);
 
-    ////////////////////////////////////////////////////////////////////////////
     auto barrierBody = PhysicsBody::createBox(Size(visibleSize.width * 0.07f, visibleSize.height * 0.52f), PHYSICSBODY_MATERIAL_DEFAULT);
     barrierBody->setCollisionBitmask(5);
     barrierBody->setContactTestBitmask(true);
@@ -141,7 +130,6 @@ bool GamingScene::init()
     barrierNode->addComponent(barrierBody);
     addChild(barrierNode);
 
-    ////////////////////////////////////////////////////////////////////////////
     auto bgPatchBody = PhysicsBody::createBox(Size(visibleSize.width * 0.085f, visibleSize.height * 0.0155f), PHYSICSBODY_MATERIAL_DEFAULT);
     bgPatchBody->setDynamic(false);
 
@@ -156,7 +144,6 @@ bool GamingScene::init()
     bgPatchSprite->setGlobalZOrder(20);
     addChild(bgPatchSprite);
 
-    ////////////////////////////////////////////////////////////////////////////
     if (currentLevel < 4)
     {
         auto fruitbasket = Basket::createBasket(this, 1);
@@ -169,12 +156,10 @@ bool GamingScene::init()
         auto recycle = Basket::createBasket(this, 5);
     }
 
-    ////////////////////////////////////////////////////////////////////////////
     auto bodiesContactListener = EventListenerPhysicsContact::create();
     bodiesContactListener->onContactBegin = CC_CALLBACK_1(GamingScene::onContactBegin, this);
     this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(bodiesContactListener, this);
 
-    ////////////////////////////////////////////////////////////////////////////
     auto touchListener = EventListenerTouchOneByOne::create();
     touchListener->onTouchBegan = CC_CALLBACK_2(GamingScene::onTouchBegan, this);
     touchListener->onTouchMoved = CC_CALLBACK_2(GamingScene::onTouchMoved, this);
@@ -201,13 +186,9 @@ void GamingScene::update(float dt)
     std::set<Node*>::iterator end = nodesScheduledForRemoval.end();
     for (; it != end; ++it) {
         Node* dyingNode = *it;
-
-        //delete ball... physics body is destroyed here
         dyingNode->onExit();
-
     }
 
-    //clear this list for next time
     nodesScheduledForRemoval.clear();
 }
 
@@ -380,14 +361,12 @@ bool GamingScene::onContactBegin(PhysicsContact& contact)
             Director::getInstance()->replaceScene(TransitionSlideInR::create(1, GameOverScene));
         }
 
-
         if (score == levelDoneCount)
         {
             playSound(1);
             auto LevelCompleteScene = LevelCompleteScene::createScene();
             Director::getInstance()->replaceScene(TransitionSlideInR::create(1, LevelCompleteScene));
         }
-
     }
 
     return true;
@@ -454,89 +433,79 @@ void GamingScene::onTouchEnded(Touch* touch, Event* event)
     playBackgroundMusic();
 }
 
-void GamingScene::changeLabelColor(Ref* pSender, Label* label)
-{
-    label->setTextColor(Color4B::YELLOW);
-}
-
-void GamingScene::menuCloseCallback(Ref* pSender)
-{
-    Director::getInstance()->end();
-}
-
 void GamingScene::setRules()
 {
     switch (currentLevel) {
     case 1:
         levelDoneCount = 10;
         itemCounter = 1;
-        itemSpeed = visibleSize.width * -0.1667f;
-        itemSpawnFreq = 1.625f;
+        itemSpeed = visibleSize.width * -0.17915f;
+        itemSpawnFreq = 1.511f;
         break;
     case 2:
         levelDoneCount = 25;
         itemCounter = 2;
-        itemSpeed = visibleSize.width * -0.17085f;
-        itemSpawnFreq = 1.585f;
+        itemSpeed = visibleSize.width * -0.18335f;
+        itemSpawnFreq = 1.477f;
         break;
     case 3:
         levelDoneCount = 40;
         itemCounter = 3;
-        itemSpeed = visibleSize.width * -0.175f;
-        itemSpawnFreq = 1.547f;
+        itemSpeed = visibleSize.width * -0.1875f;
+        itemSpawnFreq = 1.444f;
         break;
     case 4:
         levelDoneCount = 60;
         itemCounter = 3;
-        itemSpeed = visibleSize.width * -0.17915f;
-        itemSpawnFreq = 1.511f;
+        itemSpeed = visibleSize.width * -0.1925f;
+        itemSpawnFreq = 1.412f;
         break;
     case 5:
         levelDoneCount = 85;
         itemCounter = 4;
-        itemSpeed = visibleSize.width * -0.18335f;
-        itemSpawnFreq = 1.477f;
+        itemSpeed = visibleSize.width * -0.19575f;
+        itemSpawnFreq = 1.382f;
         break;
     case 6:
         levelDoneCount = 115;
         itemCounter = 5;
-        itemSpeed = visibleSize.width * -0.1875f;
-        itemSpawnFreq = 1.444f;
+        itemSpeed = visibleSize.width * -0.2f;
+        itemSpawnFreq = 1.354f;
         break;
     case 7:
         levelDoneCount = 150;
         itemCounter = 5;
         badItemCounter = 1;
-        itemSpeed = visibleSize.width * -0.1925f;
-        itemSpawnFreq = 1.412f;
+        itemSpeed = visibleSize.width * -0.20415f;
+        itemSpawnFreq = 1.326f;
         break;
     case 8:
         levelDoneCount = 190;
         itemCounter = 6;
         badItemCounter = 1;
-        itemSpeed = visibleSize.width * -0.19575f;
-        itemSpawnFreq = 1.382f;
+        itemSpeed = visibleSize.width * -0.2085f;
+        itemSpawnFreq = 1.3f;
         break;
     case 9:
         levelDoneCount = 235;
         itemCounter = 6;
         badItemCounter = 2;
-        itemSpeed = visibleSize.width * -0.2f;
-        itemSpawnFreq = 1.354f;
+        itemSpeed = visibleSize.width * -0.2125f;
+        itemSpawnFreq = 1.274f;
         break;
     case 10:
         levelDoneCount = 285;
         itemCounter = 7;
         badItemCounter = 2;
-        itemSpeed = visibleSize.width * -0.20415f;
-        itemSpawnFreq = 1.326f;
+        itemSpeed = visibleSize.width * -0.21675f;
+        itemSpawnFreq = 1.25f;
         break;
     case 11:
         levelDoneCount = 350;
         itemCounter = 7;
         badItemCounter = 3;
-        itemSpeed = visibleSize.width * -0.2085f;
-        itemSpawnFreq = 1.3f;
+        itemSpeed = visibleSize.width * -0.2215f;
+        itemSpawnFreq = 1.2264f;
         break;
     }
 }
@@ -576,8 +545,7 @@ void GamingScene::playBackgroundMusic()
         {
             inGameMusic = experimental::AudioEngine::play2d("audio/mainMusic_1.mp3", false, 0.4f);
             musicSwitch = true;
-        }
-        
+        }      
     }
 }
 

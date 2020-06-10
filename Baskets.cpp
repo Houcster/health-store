@@ -59,14 +59,12 @@ Basket* Basket::createBasket(Layer* layer, int category)
         basket->spriteBack->setContentSize(size);
         basket->spriteBack->setPosition(position);
         basket->spriteBack->setGlobalZOrder(2);
-        //basket->spriteBack->setOpacity(20);
         basket->addChild(basket->spriteBack);
 
         basket->spriteForward = Sprite::createWithSpriteFrameName(nameForward);
         basket->spriteForward->setContentSize(size);
         basket->spriteForward->setPosition(position);
         basket->spriteForward->setGlobalZOrder(4);
-        //basket->spriteForward->setOpacity(20);
         basket->addChild(basket->spriteForward);
 
         if (MyBodyParser::getInstance()->parseJsonFile("PhysicsBodies.json"))

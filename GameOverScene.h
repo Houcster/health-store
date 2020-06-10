@@ -20,7 +20,6 @@ public:
     void restartGame(cocos2d::Ref* pSender);
     void continueGame(cocos2d::Ref* pSender);
     void continueGameByAds(cocos2d::Ref* pSender);
-    void getReward();
     void shareResults(cocos2d::Ref* pSender);
     void showMainMenu(cocos2d::Ref* pSender);
 

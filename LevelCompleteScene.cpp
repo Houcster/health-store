@@ -1,7 +1,6 @@
 #include "MainMenuScene.h"
 #include "GamingScene.h"
 #include "AppDelegate.h"
-#include "SimpleAudioEngine.h"
 #include "LevelCompleteScene.h"
 #include "AudioEngine.h"
 
@@ -11,16 +10,19 @@
 
 USING_NS_CC;
 
+extern Size visibleSize;
+
 extern int score;
 extern int highScore;
 extern int currentLevel;
 extern int levelDoneCount;
-extern Size visibleSize;
 extern int itemCounter;
-extern float itemSpeed;
 extern int lives;
 extern int badItemCounter;
 extern int showAdsCounter;
+
+extern float itemSpeed;
+
 extern bool isAdsEnable;
 extern bool isSoundsEnable;
 extern bool isMusicEnable;
@@ -41,8 +43,6 @@ static void problemLoading(const char* filename)
 // on "init" you need to initialize your instance
 bool LevelCompleteScene::init()
 {
-    //////////////////////////////
-    // 1. super init first
     if (!Scene::init())
     {
         return false;
@@ -97,9 +97,10 @@ bool LevelCompleteScene::init()
     mainMenuItem->getNormalImage()->setContentSize(mainMenuItem->getContentSize());
     mainMenuItem->getSelectedImage()->setContentSize(mainMenuItem->getContentSize());
 
-    auto* menu = Menu::create(nextItem,
-                              mainMenuItem,      
-                              NULL);
+    auto* menu = Menu::create(
+        nextItem,
+        mainMenuItem,      
+        NULL);
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
 
@@ -162,5 +163,4 @@ void LevelCompleteScene::showMainMenu(Ref* pSender)
     itemSpeed = 0;
     auto MainMenuScene = MainMenuScene::createScene();
     Director::getInstance()->replaceScene(TransitionSlideInR::create(1, MainMenuScene));
-
 }

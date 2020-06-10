@@ -37,7 +37,6 @@ Item* Item::createItem()
         item->sprite->setContentSize(Size(visibleSize.width * 0.105f, visibleSize.height * 0.185f));
         item->sprite->setPosition(visibleSize.width * 0.95f, visibleSize.height * 0.8);
         item->sprite->setGlobalZOrder(3);
-        //item->sprite->setOpacity(70);
 
         if (MyBodyParser::getInstance()->parseJsonFile("PhysicsBodies.json"))
         {
@@ -63,9 +62,8 @@ Item* Item::createItem()
         }
 
         item->body->setVelocity(Vec2(itemSpeed, 0));
-
         item->addChild(item->sprite);
-        //layer->addChild(item);
+
         return item;
     }
     else
@@ -92,7 +90,6 @@ Item* Item::createBadItem()
         item->sprite->setContentSize(Size(visibleSize.width * 0.105f, visibleSize.height * 0.185f));
         item->sprite->setPosition(visibleSize.width * 0.95f, visibleSize.height * 0.8);
         item->sprite->setGlobalZOrder(3);
-        //item->sprite->setOpacity(70);
 
         if (MyBodyParser::getInstance()->parseJsonFile("PhysicsBodies.json"))
         {
@@ -120,7 +117,6 @@ Item* Item::createBadItem()
         item->body->setVelocity(Vec2(itemSpeed, 0));
 
         item->addChild(item->sprite);
-        //layer->addChild(item);
         return item;
     }
     else

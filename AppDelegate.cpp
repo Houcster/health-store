@@ -1,15 +1,9 @@
 #include "AppDelegate.h"
-#include "MainMenuScene.h"
-#include "LevelCompleteScene.h"
-#include "GameOverScene.h"
 #include "LogoSplashScene.h"
 
 #ifdef SDKBOX_ENABLED
 #include "PluginIAP/PluginIAP.h"
 #endif
-//#ifdef SDKBOX_ENABLED
-//#include "PluginSdkboxAds/PluginSdkboxAds.h"
-//#endif
 #ifdef SDKBOX_ENABLED
 #include "PluginAdMob/PluginAdMob.h"
 #endif
@@ -38,6 +32,7 @@ static cocos2d::Size mediumResolutionSize = cocos2d::Size(1920, 1080);
 static cocos2d::Size largeResolutionSize = cocos2d::Size(2560, 1440);
 
 Size visibleSize;
+
 int currentLevel = 1;
 int score = 0;
 int lives = 2;
@@ -48,9 +43,11 @@ int highScore = 0;
 int mainTheme;
 int inGameMusic = -2;
 int showAdsCounter = 0;
+
 bool isSoundsEnable = true;
 bool isMusicEnable = true;
 bool isAdsEnable = true;
+
 float itemSpeed = 0;
 float itemSpawnFreq = 1.8f;
 
@@ -89,9 +86,6 @@ bool AppDelegate::applicationDidFinishLaunching() {
 #ifdef SDKBOX_ENABLED
     sdkbox::IAP::init();
 #endif
-//#ifdef SDKBOX_ENABLED
-//    sdkbox::PluginSdkboxAds::init();
-//#endif
 #ifdef SDKBOX_ENABLED
     sdkbox::PluginAdMob::init();
 #endif
@@ -141,7 +135,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     isMusicEnable = def->getBoolForKey("IS_MUSIC_ENABLE", true);
     isAdsEnable = def->getBoolForKey("IS_ADS_ENABLE", true);
 
-    //������ Sprite Sheet
+    //Load Sprite Sheets
     auto spritecache = SpriteFrameCache::getInstance();
 
     spritecache->addSpriteFramesWithFile("hdr/hs_spritesheet_1.plist");
@@ -154,11 +148,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
 #ifdef SDKBOX_ENABLED
     if (isAdsEnable)
     {
-        sdkbox::PluginAdMob::cache("rewarded");
         sdkbox::PluginAdMob::cache("next_level");
+        sdkbox::PluginAdMob::cache("rewarded");
     }
 #endif
-
 
     visibleSize = Director::getInstance()->getVisibleSize();
   

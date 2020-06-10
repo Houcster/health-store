@@ -2,7 +2,6 @@
 #include "LogoSplashScene.h"
 #include "AppDelegate.h"
 #include "AudioEngine.h"
-#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
@@ -33,8 +32,6 @@ static void problemLoading(const char* filename)
 // on "init" you need to initialize your instance
 bool LogoSplashScene::init()
 {
-    //////////////////////////////
-    // 1. super init first
     if (!Layer::init())
     {
         return false;
@@ -46,7 +43,6 @@ bool LogoSplashScene::init()
     layerGradient->setPosition(origin);
     addChild(layerGradient);
 
-    //if (SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hs_spritesheet.plist"))
     if (   SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hdr/hs_spritesheet_1.plist")
         && SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hdr/hs_spritesheet_2.plist")
         && SpriteFrameCache::getInstance()->isSpriteFramesWithFileLoaded("hdr/hs_spritesheet_3.plist")

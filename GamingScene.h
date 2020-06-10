@@ -9,23 +9,18 @@ class GamingScene : public cocos2d::Layer
 public:
     static cocos2d::Scene* createScene();
     virtual bool init();
-
-    void setRules();
+    
     cocos2d::Label* gs_levelLabel;
     cocos2d::Label* gs_scoreLabel;
-    // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
-    void changeLabelColor(cocos2d::Ref* pSender, cocos2d::Label* label);
-
+    // a selector callback 
+    void update(float dt);
+    void createItems(float dt);   
     bool onContactBegin(cocos2d::PhysicsContact& contact);
-
     bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
-    void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
+    void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);   
+    void setRules();
     void playSound(int soundKey);
-    void createItems(float dt);
-    void update(float dt);
-
     void playBackgroundMusic();
 
 protected:

@@ -11,11 +11,5 @@ public:
 
     cocos2d::Sprite* sprite;
     cocos2d::PhysicsBody* body;
-
-    ~Item()
-    {
-        CCLOG("Destructor was called!");
-    }
 };
-
 #endif // __ITEMS__

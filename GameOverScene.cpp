@@ -11,19 +11,22 @@
 
 USING_NS_CC;
 
+extern Size visibleSize;
+
 extern int score;
 extern int highScore;
 extern int lives;
 extern int currentLevel;
-extern Size visibleSize;
 extern int levelDoneCount;
 extern int itemCounter;
 extern int badItemCounter;
-extern float itemSpeed;
+
 extern bool isSoundsEnable;
 extern bool isMusicEnable;
 extern bool isAdsEnable;
+
 extern float itemSpawnFreq;
+extern float itemSpeed;
 
 static bool isRewarded = false;
 MenuItemSprite* restartItem;
@@ -79,7 +82,6 @@ bool GameOverScene::init()
         // add the label as a child to this layer
         this->addChild(gos_label, 1);
     }
-
 
     restartItem = MenuItemSprite::create(
         Sprite::createWithSpriteFrameName("continueNoAds"),
@@ -152,9 +154,7 @@ bool GameOverScene::init()
         restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
         restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
     }
-    
 #endif
-
 
     auto shareItem = MenuItemSprite::create(
         Sprite::createWithSpriteFrameName("gmovrShareButton"),
@@ -176,10 +176,11 @@ bool GameOverScene::init()
     mainMenuItem->getNormalImage()->setContentSize(mainMenuItem->getContentSize());
     mainMenuItem->getSelectedImage()->setContentSize(mainMenuItem->getContentSize());
 
-    auto* menu = Menu::create(restartItem, 
-                              shareItem, 
-                              mainMenuItem,
-                              NULL);
+    auto* menu = Menu::create(
+        restartItem, 
+        shareItem, 
+        mainMenuItem,
+        NULL);
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
 
@@ -216,7 +217,6 @@ void GameOverScene::restartGame(cocos2d::Ref* pSender)
         isRewarded = false;
     }
 #endif
-
 }
 
 void GameOverScene::continueGame(cocos2d::Ref* pSender)
@@ -229,15 +229,15 @@ void GameOverScene::continueGame(cocos2d::Ref* pSender)
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
     if (isAdsEnable)
     {
-            experimental::AudioEngine::stopAll();
-            sdkbox::PluginAdMob::show("rewarded");
+        experimental::AudioEngine::stopAll();
+        sdkbox::PluginAdMob::show("rewarded");
 
-            restartItem->setCallback(CC_CALLBACK_1(GameOverScene::restartGame, this));
-            restartItem->setNormalImage(Sprite::createWithSpriteFrameName("gmovrRestartButton"));
-            restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("gmovrRestartButtonPressed"));
-            restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
-            restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
-            restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
+        restartItem->setCallback(CC_CALLBACK_1(GameOverScene::restartGame, this));
+        restartItem->setNormalImage(Sprite::createWithSpriteFrameName("gmovrRestartButton"));
+        restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("gmovrRestartButtonPressed"));
+        restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
+        restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
+        restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
     }
     else
     {
@@ -251,18 +251,6 @@ void GameOverScene::continueGameByAds(cocos2d::Ref* pSender)
 {
     auto GamingScene = GamingScene::createScene();
     Director::getInstance()->replaceScene(TransitionSlideInL::create(1, GamingScene));
-}
-
-void GameOverScene::getReward()
-{
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-    restartItem->setCallback(CC_CALLBACK_1(GameOverScene::continueGameByAds, this));
-    restartItem->setNormalImage(Sprite::createWithSpriteFrameName("readyButton"));
-    restartItem->setSelectedImage(Sprite::createWithSpriteFrameName("readyButtonPressed"));
-    restartItem->setContentSize(Size(visibleSize.width * 0.25f, visibleSize.height * 0.1325f));
-    restartItem->getNormalImage()->setContentSize(restartItem->getContentSize());
-    restartItem->getSelectedImage()->setContentSize(restartItem->getContentSize());
-#endif
 }
 
 void GameOverScene::shareResults(cocos2d::Ref* pSender)

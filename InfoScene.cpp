@@ -22,17 +22,12 @@ static void problemLoading(const char* filename)
 // on "init" you need to initialize your instance
 bool InfoScene::init()
 {
-    //////////////////////////////
-    // 1. super init first
     if (!Scene::init())
     {
         return false;
     }
 
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
-    //auto bg = cocos2d::LayerColor::create(Color4B(175, 200, 115, 255)); //Color4B(175, 200, 115, 255)Color4B(250, 190, 25, 255)
-    //this->addChild(bg);
 
     auto infoBGSprite = Sprite::createWithSpriteFrameName("settingsBG");
     infoBGSprite->setContentSize(Size(visibleSize.width, visibleSize.height));

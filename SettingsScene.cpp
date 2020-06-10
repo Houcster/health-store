@@ -1,8 +1,4 @@
 #include "MainMenuScene.h"
-#include "GamingScene.h"
-#include "AppDelegate.h"
-#include "SimpleAudioEngine.h"
-#include "LevelCompleteScene.h"
 #include "AudioEngine.h"
 #include "SettingsScene.h"
 
@@ -42,20 +38,15 @@ bool SettingsScene::init()
 
     Vec2 origin = Director::getInstance()->getVisibleOrigin(); 
 
-    //auto bg = cocos2d::LayerColor::create(Color4B(110, 190, 235, 255)); //Color4B(175, 200, 115, 255)Color4B(250, 190, 25, 255)
-    //this->addChild(bg);
-
     auto settingsBGSprite = Sprite::createWithSpriteFrameName("settingsBG");
     settingsBGSprite->setContentSize(Size(visibleSize.width, visibleSize.height));
     settingsBGSprite->setPosition(visibleSize.width * 0.5f, visibleSize.height * 0.5f);
     addChild(settingsBGSprite);
 
-
     auto soundLabel = Label::createWithTTF("Sound", "fonts/arial.ttf", 44);
     soundLabel->setPosition(visibleSize.width * 0.1f, visibleSize.height * 0.65f);
     soundLabel->setColor(Color3B::BLACK);
     this->addChild(soundLabel, 1);
-
 
     auto musicLabel = Label::createWithTTF("Music", "fonts/arial.ttf", 44);
     musicLabel->setPosition(visibleSize.width * 0.1f, visibleSize.height * 0.35f);
@@ -163,12 +154,13 @@ bool SettingsScene::init()
     mainMenuItem->getNormalImage()->setContentSize(mainMenuItem->getContentSize());
     mainMenuItem->getSelectedImage()->setContentSize(mainMenuItem->getContentSize());
 
-    auto* menu = Menu::create(soundStateItem,
-                              musicStateItem,
-                              removeAdsItem,
-                              restoreAdsItem,
-                              mainMenuItem,
-                              NULL);
+    auto* menu = Menu::create(
+        soundStateItem,
+        musicStateItem,
+        removeAdsItem,
+        restoreAdsItem,
+        mainMenuItem,
+        NULL);
     menu->setPosition(Point(0, 0));
     this->addChild(menu);
 
@@ -181,8 +173,7 @@ bool SettingsScene::init()
 }
 
 void SettingsScene::setSoundsEnabling(Ref* pSender)
-{
-    
+{  
     UserDefault* def = UserDefault::getInstance();
 
     if (isSoundsEnable)
@@ -209,8 +200,7 @@ void SettingsScene::setSoundsEnabling(Ref* pSender)
         soundStateItem->getNormalImage()->setContentSize(soundStateItem->getContentSize());
         soundStateItem->getSelectedImage()->setContentSize(soundStateItem->getContentSize());
     }
-
-    
+   
     def->flush();
 }
 
@@ -248,12 +238,16 @@ void SettingsScene::setMusicEnabling(Ref* pSender)
         musicStateItem->getSelectedImage()->setContentSize(musicStateItem->getContentSize());
     }
 
-
     def->flush();
 }
 
 void SettingsScene::removeAds(cocos2d::Ref* pSender)
 {
+    if (isSoundsEnable)
+    {
+        experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    }
+
 #ifdef SDKBOX_ENABLED
     sdkbox::IAP::purchase("remove_ads");
 #endif
@@ -261,6 +255,11 @@ void SettingsScene::removeAds(cocos2d::Ref* pSender)
 
 void SettingsScene::restoreAds(cocos2d::Ref* pSender)
 {
+    if (isSoundsEnable)
+    {
+        experimental::AudioEngine::play2d("audio/buttonSound.mp3");
+    }
+
 #ifdef SDKBOX_ENABLED
     sdkbox::IAP::restore();
 #endif
